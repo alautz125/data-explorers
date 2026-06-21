@@ -386,9 +386,13 @@ async function fetchSchedule(){
     const row = document.createElement('div');
     row.className = 'game-row';
 
-    const inn = g.linescore ? `${g.linescore.isTopInning?'▲':'▽'}${g.linescore.currentInning}` : '';
+    const ls = g.linescore;
+    const inn = ls ? `${ls.isTopInning?'▲':'▽'}${ls.currentInning}` : '';
+    const awayScore = ls ? (g.teams.away.score ?? '0') : null;
+    const homeScore = ls ? (g.teams.home.score ?? '0') : null;
+    const hasScore = awayScore !== null && (isLive || isFinal);
     const stateStr = isLive && inn ? inn : state.replace('Final','F').replace('Scheduled','Sched').replace('Pre-Game','Pre').replace('In Progress','Live');
-    const stateStyle = isLive ? 'color:#3B6D11;font-weight:500' : 'color:var(--text2)';
+    const stateStyle = isLive ? 'color:#3B6D11;font-weight:500' : isFinal ? 'color:var(--text2)' : 'color:var(--text2)';
 
     // Find my players in this game
     const myInGame = ALL.filter(p => {
@@ -396,10 +400,14 @@ async function fetchSchedule(){
       return s && s.gamePk === pk;
     });
 
+    const scoreHTML = hasScore
+      ? `<span style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${awayScore}–${homeScore}</span>`
+      : '';
+
     row.innerHTML = `<div>
       <div>${away} @ ${home}</div>
       ${myInGame.length ? `<div class="game-my-players">Your players: ${myInGame.map(p=>p.split(' ').pop()).join(', ')}</div>` : ''}
-    </div><span style="${stateStyle}">${stateStr}</span>`;
+    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">${scoreHTML}<span style="${stateStyle}">${stateStr}</span></div>`;
     el.appendChild(row);
   });
 
