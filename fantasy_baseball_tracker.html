@@ -5,617 +5,809 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fantasy Baseball Live Tracker</title>
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #ffffff; --bg2: #f5f5f3; --bg3: #eeede9;
-    --text: #1a1a18; --text2: #6b6b67; --text3: #9b9b96;
-    --border: rgba(0,0,0,0.12); --border2: rgba(0,0,0,0.22);
-    --radius: 8px; --radius-lg: 12px;
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --bg: #1e1e1c; --bg2: #2a2a28; --bg3: #333330;
-      --text: #f0efea; --text2: #9b9b96; --text3: #6b6b67;
-      --border: rgba(255,255,255,0.12); --border2: rgba(255,255,255,0.22);
-    }
-  }
-  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: var(--bg3); color: var(--text); min-height: 100vh; }
-  .app { max-width: 1100px; margin: 0 auto; padding: 1.5rem 1rem; }
-  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
-  .header h1 { font-size: 20px; font-weight: 600; }
-  .header p { font-size: 13px; color: var(--text2); margin-top: 2px; }
-  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .btn { background: var(--bg); border: 0.5px solid var(--border2); border-radius: var(--radius); padding: 7px 14px; font-size: 13px; cursor: pointer; color: var(--text); display: inline-flex; align-items: center; gap: 6px; transition: background 0.15s; font-family: inherit; }
-  .btn:hover { background: var(--bg2); }
-  .btn.active { background: var(--bg2); }
-  .pill-live { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; padding: 5px 11px; border-radius: 100px; font-weight: 500; background: var(--bg2); color: var(--text2); }
-  .pill-live.on { background: #EAF3DE; color: #3B6D11; }
-  .dot { width: 7px; height: 7px; border-radius: 50%; background: #aaa; flex-shrink: 0; }
-  .dot.live { background: #639922; animation: pulse 1.4s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.4} }
-  .summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1.25rem; }
-  @media(max-width:600px){ .summary-grid { grid-template-columns: 1fr 1fr; } }
-  .stat-card { background: var(--bg); border-radius: var(--radius); padding: 12px 14px; border: 0.5px solid var(--border); }
-  .stat-label { font-size: 11px; color: var(--text2); margin-bottom: 4px; }
-  .stat-val { font-size: 22px; font-weight: 600; }
-  .main-grid { display: grid; grid-template-columns: 1fr 300px; gap: 14px; align-items: start; }
-  @media(max-width:750px){ .main-grid { grid-template-columns: 1fr; } }
-  .panel { background: var(--bg); border: 0.5px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
-  .panel-header { padding: 10px 14px; border-bottom: 0.5px solid var(--border); font-size: 13px; font-weight: 500; color: var(--text2); display: flex; justify-content: space-between; align-items: center; }
-  .tabs { display: flex; border-bottom: 0.5px solid var(--border); }
-  .tab { padding: 9px 16px; font-size: 13px; cursor: pointer; color: var(--text2); border-bottom: 2px solid transparent; transition: all 0.15s; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; }
-  .tab.active { color: var(--text); border-bottom-color: var(--text); font-weight: 500; }
-  .roster-list { max-height: 500px; overflow-y: auto; }
-  .player-row { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border-bottom: 0.5px solid var(--border); transition: background 0.1s; }
-  .player-row:last-child { border-bottom: none; }
-  .player-row:hover { background: var(--bg2); }
-  .player-avatar { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; flex-shrink: 0; }
-  .player-info { flex: 1; min-width: 0; }
-  .player-name { font-size: 13px; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player-meta { font-size: 11px; color: var(--text2); margin-top: 1px; }
-  .player-game { font-size: 11px; color: var(--text3); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .player-status { font-size: 11px; padding: 2px 8px; border-radius: 100px; font-weight: 500; white-space: nowrap; background: var(--bg2); color: var(--text3); flex-shrink: 0; }
-  .status-live    { background: #EAF3DE; color: #3B6D11; }
-  .status-lineup  { background: #E6F1FB; color: #185FA5; }
-  .status-starting{ background: #EEEDFE; color: #534AB7; }
-  .status-scheduled{ background: var(--bg2); color: var(--text2); }
-  .status-final   { background: var(--bg2); color: var(--text2); }
-  .feed { max-height: 500px; overflow-y: auto; padding: 10px; }
-  .feed-empty { padding: 48px 20px; text-align: center; color: var(--text2); font-size: 13px; }
-  .event-card { border-radius: var(--radius); border: 0.5px solid var(--border); padding: 10px 12px; margin-bottom: 8px; animation: slideIn 0.22s ease; background: var(--bg); }
-  .event-card.hit  { border-left: 3px solid #639922; }
-  .event-card.hr   { border-left: 3px solid #D85A30; }
-  .event-card.out  { border-left: 3px solid var(--border2); }
-  .event-card.walk { border-left: 3px solid #185FA5; }
-  .event-card.pitch{ border-left: 3px solid #7F77DD; }
-  .event-card.k    { border-left: 3px solid #D4537E; }
-  .event-card.lineup{ border-left: 3px solid #185FA5; }
-  @keyframes slideIn { from{opacity:0;transform:translateY(-5px)} to{opacity:1;transform:translateY(0)} }
-  .event-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 3px; gap: 6px; }
-  .event-player { font-size: 13px; font-weight: 500; }
-  .event-time { font-size: 11px; color: var(--text2); white-space: nowrap; }
-  .event-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
-  .badge { font-size: 11px; font-weight: 500; padding: 1px 6px; border-radius: 100px; margin-left: 5px; }
-  .badge-hit   { background:#EAF3DE;color:#3B6D11; }
-  .badge-hr    { background:#FAECE7;color:#993C1D; }
-  .badge-out   { background:var(--bg2);color:var(--text2); }
-  .badge-walk  { background:#E6F1FB;color:#185FA5; }
-  .badge-pitch { background:#EEEDFE;color:#534AB7; }
-  .badge-k     { background:#FBEAF0;color:#993556; }
-  .badge-lineup{ background:#E6F1FB;color:#185FA5; }
-  .notif-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; border-bottom: 0.5px solid var(--border); gap: 12px; }
-  .notif-row:last-child { border-bottom: none; }
-  .notif-label { font-size: 13px; }
-  .notif-sub { font-size: 11px; color: var(--text2); margin-top: 1px; }
-  .toggle { position: relative; width: 36px; height: 20px; cursor: pointer; flex-shrink: 0; }
-  .toggle input { opacity: 0; width: 0; height: 0; }
-  .toggle-track { position: absolute; inset: 0; border-radius: 100px; background: var(--bg3); transition: background 0.2s; border: 0.5px solid var(--border); }
-  .toggle input:checked + .toggle-track { background: #639922; border-color: #639922; }
-  .toggle-thumb { position: absolute; top: 3px; left: 3px; width: 14px; height: 14px; border-radius: 50%; background: white; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.3); pointer-events: none; }
-  .toggle input:checked ~ .toggle-thumb { left: 19px; }
-  .game-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 0.5px solid var(--border); font-size: 12px; gap: 8px; }
-  .game-row:last-child { border-bottom: none; }
-  .game-my-players { font-size: 11px; color: #185FA5; margin-top: 1px; }
-  #games-list { padding: 4px 14px 10px; }
-  .refresh-time { font-size: 11px; color: var(--text2); }
-  .notif-banner { background: #E6F1FB; border: 0.5px solid #B5D4F4; border-radius: var(--radius); padding: 10px 14px; font-size: 13px; color: #185FA5; margin-bottom: 1rem; display: none; }
-  .loading-bar { height: 2px; background: var(--bg2); border-radius: 2px; overflow: hidden; margin-bottom: 1rem; display: none; }
-  .loading-bar-inner { height: 100%; width: 30%; background: #639922; border-radius: 2px; animation: loading 1s ease-in-out infinite; }
-  @keyframes loading { 0%{margin-left:-30%}100%{margin-left:110%} }
-  .section-label { font-size: 11px; font-weight: 600; color: var(--text3); letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 14px 4px; border-bottom: 0.5px solid var(--border); }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#fff;--bg2:#f5f5f3;--bg3:#eeede9;
+  --text:#1a1a18;--text2:#6b6b67;--text3:#9b9b96;
+  --border:rgba(0,0,0,.12);--border2:rgba(0,0,0,.22);
+  --radius:8px;--radius-lg:12px;
+  --green:#639922;--green-bg:#EAF3DE;--green-text:#3B6D11;
+  --blue:#185FA5;--blue-bg:#E6F1FB;
+  --purple-bg:#EEEDFE;--purple-text:#534AB7;
+  --red-bg:#FAECE7;--red-text:#993C1D;
+  --pink-bg:#FBEAF0;--pink-text:#993556;
+  --orange:#D85A30;--pink:#D4537E;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#1e1e1c;--bg2:#2a2a28;--bg3:#333330;--text:#f0efea;--text2:#9b9b96;--text3:#6b6b67;--border:rgba(255,255,255,.12);--border2:rgba(255,255,255,.22)}
+}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg3);color:var(--text);min-height:100vh}
+.app{max-width:1140px;margin:0 auto;padding:1.5rem 1rem}
+.header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;flex-wrap:wrap;gap:10px}
+.header h1{font-size:20px;font-weight:600}
+.header p{font-size:13px;color:var(--text2);margin-top:2px}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.btn{background:var(--bg);border:.5px solid var(--border2);border-radius:var(--radius);padding:7px 14px;font-size:13px;cursor:pointer;color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:background .15s;font-family:inherit}
+.btn:hover{background:var(--bg2)}
+.btn.primary{background:var(--text);color:var(--bg);border-color:var(--text)}
+.btn.primary:hover{opacity:.85}
+.btn.danger{color:#993C1D;border-color:rgba(153,60,29,.3)}
+.btn.danger:hover{background:var(--red-bg)}
+.pill-live{display:inline-flex;align-items:center;gap:5px;font-size:12px;padding:5px 11px;border-radius:100px;font-weight:500;background:var(--bg2);color:var(--text2)}
+.pill-live.on{background:var(--green-bg);color:var(--green-text)}
+.dot{width:7px;height:7px;border-radius:50%;background:#aaa;flex-shrink:0}
+.dot.live{background:var(--green);animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Summary row */
+.summary-row{display:flex;gap:10px;margin-bottom:1.25rem;overflow-x:auto;padding-bottom:2px}
+.stat-card{background:var(--bg);border-radius:var(--radius);padding:10px 14px;border:.5px solid var(--border);flex-shrink:0;min-width:90px}
+.stat-label{font-size:11px;color:var(--text2);margin-bottom:3px;white-space:nowrap}
+.stat-val{font-size:20px;font-weight:600}
+.stat-section{display:flex;gap:10px;flex-shrink:0}
+.stat-divider{width:1px;background:var(--border);flex-shrink:0;margin:0 2px}
+
+/* Player stats table */
+.stats-tab-wrap{overflow-x:auto}
+.stats-table{width:100%;border-collapse:collapse;font-size:12px}
+.stats-table th{padding:6px 10px;text-align:left;font-weight:500;color:var(--text2);border-bottom:.5px solid var(--border);white-space:nowrap;background:var(--bg2)}
+.stats-table td{padding:7px 10px;border-bottom:.5px solid var(--border);white-space:nowrap}
+.stats-table tr:last-child td{border-bottom:none}
+.stats-table tr:hover td{background:var(--bg2)}
+.stats-table .num{text-align:right;font-variant-numeric:tabular-nums}
+.qs-yes{color:var(--green-text);font-weight:600}
+.qs-active{color:var(--blue);font-weight:600}
+
+/* Layout */
+.main-grid{display:grid;grid-template-columns:1fr 300px;gap:14px;align-items:start}
+@media(max-width:750px){.main-grid{grid-template-columns:1fr}}
+.panel{background:var(--bg);border:.5px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.panel-header{padding:10px 14px;border-bottom:.5px solid var(--border);font-size:13px;font-weight:500;color:var(--text2);display:flex;justify-content:space-between;align-items:center}
+.tabs{display:flex;border-bottom:.5px solid var(--border);overflow-x:auto}
+.tab{padding:9px 14px;font-size:13px;cursor:pointer;color:var(--text2);border-bottom:2px solid transparent;transition:all .15s;background:none;border-top:none;border-left:none;border-right:none;font-family:inherit;white-space:nowrap}
+.tab.active{color:var(--text);border-bottom-color:var(--text);font-weight:500}
+.roster-list{max-height:500px;overflow-y:auto}
+.player-row{display:flex;align-items:center;gap:10px;padding:8px 14px;border-bottom:.5px solid var(--border);transition:background .1s}
+.player-row:last-child{border-bottom:none}
+.player-row:hover{background:var(--bg2)}
+.player-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.player-info{flex:1;min-width:0}
+.player-name{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-meta{font-size:11px;color:var(--text2);margin-top:1px}
+.player-game{font-size:11px;color:var(--text3);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.player-status{font-size:11px;padding:2px 8px;border-radius:100px;font-weight:500;white-space:nowrap;background:var(--bg2);color:var(--text3);flex-shrink:0}
+.status-live{background:var(--green-bg);color:var(--green-text)}
+.status-lineup{background:var(--blue-bg);color:var(--blue)}
+.status-starting{background:var(--purple-bg);color:var(--purple-text)}
+.remove-btn{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;padding:2px 4px;border-radius:4px;line-height:1;flex-shrink:0}
+.remove-btn:hover{color:#993C1D;background:var(--red-bg)}
+.section-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;padding:8px 14px 4px;border-bottom:.5px solid var(--border)}
+.feed{max-height:520px;overflow-y:auto;padding:10px}
+.feed-empty{padding:48px 20px;text-align:center;color:var(--text2);font-size:13px;line-height:1.6}
+.event-card{border-radius:var(--radius);border:.5px solid var(--border);padding:10px 12px;margin-bottom:8px;background:var(--bg)}
+.event-card.hit{border-left:3px solid var(--green)}
+.event-card.hr{border-left:3px solid var(--orange)}
+.event-card.out{border-left:3px solid var(--border2)}
+.event-card.k{border-left:3px solid var(--pink)}
+.event-card.walk{border-left:3px solid var(--blue)}
+.event-card.pitch{border-left:3px solid #7F77DD}
+.event-card.pitch-start{border-left:3px solid #7F77DD}
+.event-card.lineup{border-left:3px solid var(--blue)}
+.event-card.error{border-left:3px solid var(--orange)}
+.event-card.p-hit{border-left:3px solid var(--orange)}
+.event-card.p-hr{border-left:3px solid var(--orange)}
+.event-card.p-walk{border-left:3px solid var(--blue)}
+.event-card.p-out{border-left:3px solid var(--green)}
+.event-card.p-k{border-left:3px solid var(--pink)}
+.event-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px;gap:6px}
+.event-player{font-size:13px;font-weight:500}
+.event-time{font-size:11px;color:var(--text2);white-space:nowrap}
+.event-desc{font-size:12px;color:var(--text2);line-height:1.5}
+.badge{font-size:11px;font-weight:500;padding:1px 6px;border-radius:100px;margin-left:5px}
+.badge-hit{background:var(--green-bg);color:var(--green-text)}
+.badge-hr{background:var(--red-bg);color:var(--red-text)}
+.badge-out{background:var(--bg2);color:var(--text2)}
+.badge-walk{background:var(--blue-bg);color:var(--blue)}
+.badge-pitch{background:var(--purple-bg);color:var(--purple-text)}
+.badge-k{background:var(--pink-bg);color:var(--pink-text)}
+.badge-lineup{background:var(--blue-bg);color:var(--blue)}
+.badge-error{background:var(--red-bg);color:var(--red-text)}
+.notif-row{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:.5px solid var(--border);gap:12px}
+.notif-row:last-child{border-bottom:none}
+.notif-label{font-size:13px}
+.notif-sub{font-size:11px;color:var(--text2);margin-top:1px}
+.toggle{position:relative;width:36px;height:20px;cursor:pointer;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;border-radius:100px;background:var(--bg3);transition:background .2s;border:.5px solid var(--border)}
+.toggle input:checked+.toggle-track{background:var(--green);border-color:var(--green)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3);pointer-events:none}
+.toggle input:checked~.toggle-thumb{left:19px}
+.game-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:.5px solid var(--border);font-size:12px;gap:8px}
+.game-row:last-child{border-bottom:none}
+.game-my-players{font-size:11px;color:var(--blue);margin-top:1px}
+#games-list{padding:4px 14px 10px}
+.refresh-time{font-size:11px;color:var(--text2)}
+.editor-wrap{padding:14px}
+.editor-wrap p{font-size:13px;color:var(--text2);margin-bottom:10px;line-height:1.5}
+.add-player-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.add-player-row input,.add-player-row select{background:var(--bg2);border:.5px solid var(--border2);border-radius:var(--radius);padding:7px 10px;font-size:13px;color:var(--text);font-family:inherit;flex:1;min-width:120px}
+.add-player-row input:focus,.add-player-row select:focus{outline:2px solid var(--green);outline-offset:1px}
+.edit-roster-list{border:.5px solid var(--border);border-radius:var(--radius);overflow:hidden;max-height:340px;overflow-y:auto}
+.edit-player-row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-bottom:.5px solid var(--border);font-size:13px}
+.edit-player-row:last-child{border-bottom:none}
+.editor-actions{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.loading-bar{height:2px;background:var(--bg2);border-radius:2px;overflow:hidden;margin-bottom:1rem;display:none}
+.loading-bar-inner{height:100%;width:30%;background:var(--green);border-radius:2px;animation:loading 1s ease-in-out infinite}
+@keyframes loading{0%{margin-left:-30%}100%{margin-left:110%}}
+.notif-banner{background:var(--blue-bg);border:.5px solid #B5D4F4;border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--blue);margin-bottom:1rem;display:none}
 </style>
 </head>
 <body>
 <div class="app">
+<div id="notif-banner" class="notif-banner">✓ Browser notifications enabled — you'll get alerts even when this tab is in the background.</div>
+<div class="loading-bar" id="loading-bar"><div class="loading-bar-inner"></div></div>
 
-  <div id="notif-banner" class="notif-banner">
-    ✓ Browser notifications enabled — you'll get alerts even when this tab is in the background.
+<div class="header">
+  <div>
+    <h1>⚾ Fantasy Baseball Live Tracker</h1>
+    <p id="subtitle">Loading roster…</p>
   </div>
-
-  <div class="loading-bar" id="loading-bar"><div class="loading-bar-inner"></div></div>
-
-  <div class="header">
-    <div>
-      <h1>⚾ Fantasy Baseball Live Tracker</h1>
-      <p id="subtitle">30 players · checking lineups & live games</p>
-    </div>
-    <div class="controls">
-      <span class="pill-live" id="live-pill"><span class="dot" id="live-dot"></span> <span id="live-label">Offline</span></span>
-      <button class="btn" id="poll-btn" onclick="togglePolling()">▶ Start tracking</button>
-      <button class="btn" id="notif-btn" onclick="requestNotifPermission()">🔔 Enable alerts</button>
-    </div>
-  </div>
-
-  <div class="summary-grid">
-    <div class="stat-card"><div class="stat-label">In lineup today</div><div class="stat-val" id="stat-lineup">—</div></div>
-    <div class="stat-card"><div class="stat-label">Currently playing</div><div class="stat-val" id="stat-active">—</div></div>
-    <div class="stat-card"><div class="stat-label">Hits</div><div class="stat-val" id="stat-hits">0</div></div>
-    <div class="stat-card"><div class="stat-label">Pitcher Ks</div><div class="stat-val" id="stat-ks">0</div></div>
-  </div>
-
-  <div class="main-grid">
-    <div class="panel">
-      <div class="tabs">
-        <button class="tab active" onclick="switchTab('feed',this)">Live feed</button>
-        <button class="tab" onclick="switchTab('roster',this)">Roster</button>
-      </div>
-      <div id="tab-feed">
-        <div class="feed" id="feed-list">
-          <div class="feed-empty">📻 Hit "Start tracking" to load lineups and receive live play-by-play events.</div>
-        </div>
-      </div>
-      <div id="tab-roster" style="display:none">
-        <div class="roster-list" id="roster-list"></div>
-      </div>
-    </div>
-
-    <div style="display:flex;flex-direction:column;gap:12px">
-      <div class="panel">
-        <div class="panel-header">Alert settings</div>
-        <div class="notif-row">
-          <div><div class="notif-label">Lineup confirmed</div><div class="notif-sub">When your player is in the lineup</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-lineup" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">Hits</div><div class="notif-sub">Singles, doubles, triples</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-hits" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">Home runs</div><div class="notif-sub">All HR events</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-hr" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">Outs</div><div class="notif-sub">Groundouts, flyouts, etc.</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-outs"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">Walks & HBP</div><div class="notif-sub">Free passes</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-walks" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">Inning completions</div><div class="notif-sub">Pitchers finishing an inning</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-innings" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">Pitcher strikeouts</div><div class="notif-sub">Ks for your pitchers</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-pks" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-        <div class="notif-row">
-          <div><div class="notif-label">All pitcher at-bats</div><div class="notif-sub">Every result while your pitcher is on the mound</div></div>
-          <label class="toggle"><input type="checkbox" id="chk-pitcher-abs"><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
-        </div>
-      </div>
-
-      <div class="panel">
-        <div class="panel-header">
-          <span>Today's games</span>
-          <span class="refresh-time" id="last-refresh"></span>
-        </div>
-        <div id="games-list" style="color:var(--text2);font-size:13px;padding:12px 14px">Start tracking to load today's schedule.</div>
-      </div>
-    </div>
+  <div class="controls">
+    <span class="pill-live" id="live-pill"><span class="dot" id="live-dot"></span> <span id="live-label">Offline</span></span>
+    <button class="btn" id="poll-btn" onclick="togglePolling()">▶ Start tracking</button>
+    <button class="btn" id="notif-btn" onclick="requestNotifPermission()">🔔 Enable alerts</button>
   </div>
 </div>
 
-<script>
-const HITTERS  = ["Ivan Herrera","Pete Alonso","Kody Clemens","Kevin McGonigle","Xavier Edwards","Bryan Reynolds","Christian Yelich","Ian Happ","Jonathan Aranda","Jake Bauers","Shea Langeliers","Bobby Witt Jr.","Mike Trout","Mickey Moniak"];
-const PITCHERS = ["Ranger Suarez","Jesús Luzardo","Carlos Rodón","Stephen Kolek","Slade Cecconi","Dylan Lee","Adrian Morejon","Dylan Cease","Riley O'Brien","Paul Skenes","Max Meyer","Bryan Woo","Andre Pallante","Max Fried","Cole Ragans","Brandon Woodruff"];
-const ALL = [...HITTERS, ...PITCHERS];
+<!-- Summary bar -->
+<div class="summary-row">
+  <div class="stat-card"><div class="stat-label">In lineup</div><div class="stat-val" id="stat-lineup">—</div></div>
+  <div class="stat-card"><div class="stat-label">Playing now</div><div class="stat-val" id="stat-active">—</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-card"><div class="stat-label">H/AB</div><div class="stat-val" id="stat-hab">—</div></div>
+  <div class="stat-card"><div class="stat-label">HR</div><div class="stat-val" id="stat-hr">0</div></div>
+  <div class="stat-card"><div class="stat-label">RBI</div><div class="stat-val" id="stat-rbi">0</div></div>
+  <div class="stat-card"><div class="stat-label">R</div><div class="stat-val" id="stat-r">0</div></div>
+  <div class="stat-card"><div class="stat-label">SB</div><div class="stat-val" id="stat-sb">0</div></div>
+  <div class="stat-divider"></div>
+  <div class="stat-card"><div class="stat-label">IP</div><div class="stat-val" id="stat-ip">0</div></div>
+  <div class="stat-card"><div class="stat-label">ER</div><div class="stat-val" id="stat-er">0</div></div>
+  <div class="stat-card"><div class="stat-label">K</div><div class="stat-val" id="stat-pk">0</div></div>
+  <div class="stat-card"><div class="stat-label">BB</div><div class="stat-val" id="stat-bb">0</div></div>
+  <div class="stat-card"><div class="stat-label">QS</div><div class="stat-val" id="stat-qs">0</div></div>
+</div>
 
-const COLORS = [
-  {bg:"#E6F1FB",fg:"#185FA5"},{bg:"#EAF3DE",fg:"#3B6D11"},{bg:"#FAEEDA",fg:"#BA7517"},
-  {bg:"#EEEDFE",fg:"#534AB7"},{bg:"#FAECE7",fg:"#993C1D"},{bg:"#FBEAF0",fg:"#993556"}
-];
-
-let polling = false, pollTimer = null, lineupTimer = null;
-let seenPlays = new Set(), seenInnings = new Set(), seenLineups = new Set();
-let hitCount = 0, ksCount = 0;
-let activeGames = [], scheduledGames = [];
-let notifEnabled = false;
-
-// playerID → fantasy name mapping, built at startup
-let mlbIdToName = {};
-// fantasy name → {battingOrder, gamePk, opponent, gameTime, confirmed}
-let rosterLineupStatus = {};
-
-function normalize(s){
-  return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z\s]/g,'').trim();
-}
-
-function matchPlayer(list, fullName){
-  const norm = normalize(fullName);
-  return list.find(p => {
-    const parts = normalize(p).split(' ').filter(x => x.length > 1);
-    return parts.every(pt => norm.includes(pt));
-  });
-}
-
-function initials(n){ return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase(); }
-
-function ordinal(n){ const s=["th","st","nd","rd"]; const v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); }
-
-function buildRoster(){
-  const el = document.getElementById('roster-list');
-  // Section: hitters
-  el.innerHTML += `<div class="section-label">Hitters</div>`;
-  HITTERS.forEach((p,i)=>{
-    const c = COLORS[i % COLORS.length];
-    el.innerHTML += playerRowHTML(p, c, 'Hitter');
-  });
-  el.innerHTML += `<div class="section-label">Pitchers</div>`;
-  PITCHERS.forEach((p,i)=>{
-    const c = COLORS[(i+2) % COLORS.length];
-    el.innerHTML += playerRowHTML(p, c, 'Pitcher');
-  });
-}
-
-function playerRowHTML(p, c, role){
-  const sid = safeId(p);
-  return `<div class="player-row">
-    <div class="player-avatar" style="background:${c.bg};color:${c.fg}">${initials(p)}</div>
-    <div class="player-info">
-      <div class="player-name">${p}</div>
-      <div class="player-meta">${role}</div>
-      <div class="player-game" id="pg_${sid}"></div>
+<div class="main-grid">
+  <div class="panel">
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('feed',this)">Live feed</button>
+      <button class="tab" onclick="switchTab('hitter-stats',this)">Hitter stats</button>
+      <button class="tab" onclick="switchTab('pitcher-stats',this)">Pitcher stats</button>
+      <button class="tab" onclick="switchTab('roster',this)">Roster</button>
+      <button class="tab" onclick="switchTab('edit',this)">Edit roster</button>
+      <button class="tab" onclick="switchTab('debug',this)">ID map</button>
     </div>
-    <span class="player-status" id="ps_${sid}">—</span>
-  </div>`;
-}
 
-function safeId(n){ return n.replace(/[^a-z0-9]/gi,'_'); }
+    <div id="tab-feed">
+      <div class="feed" id="feed-list">
+        <div class="feed-empty">📻 Add your players in <strong>Edit roster</strong>, then hit <strong>Start tracking</strong>.</div>
+      </div>
+    </div>
 
-function updatePlayerStatus(name, text, cls){
-  const el = document.getElementById('ps_' + safeId(name));
-  if(!el) return;
-  el.textContent = text;
-  el.className = 'player-status ' + (cls||'');
-}
+    <div id="tab-hitter-stats" style="display:none">
+      <div class="stats-tab-wrap">
+        <table class="stats-table">
+          <thead><tr><th>Player</th><th class="num">H</th><th class="num">AB</th><th class="num">AVG</th><th class="num">HR</th><th class="num">RBI</th><th class="num">R</th><th class="num">SB</th></tr></thead>
+          <tbody id="hitter-stats-body"></tbody>
+        </table>
+      </div>
+    </div>
 
-function updatePlayerGame(name, text){
-  const el = document.getElementById('pg_' + safeId(name));
-  if(el) el.textContent = text;
-}
+    <div id="tab-pitcher-stats" style="display:none">
+      <div class="stats-tab-wrap">
+        <table class="stats-table">
+          <thead><tr><th>Player</th><th class="num">IP</th><th class="num">ER</th><th class="num">K</th><th class="num">BB</th><th>QS</th></tr></thead>
+          <tbody id="pitcher-stats-body"></tbody>
+        </table>
+      </div>
+    </div>
 
-function switchTab(tab, btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById('tab-feed').style.display = tab==='feed' ? '' : 'none';
-  document.getElementById('tab-roster').style.display = tab==='roster' ? '' : 'none';
-}
+    <div id="tab-roster" style="display:none">
+      <div class="roster-list" id="roster-list"></div>
+    </div>
 
-async function requestNotifPermission(){
-  if(!('Notification' in window)){ alert('Your browser does not support notifications.'); return; }
-  const p = await Notification.requestPermission();
-  notifEnabled = p === 'granted';
-  if(notifEnabled){
-    document.getElementById('notif-banner').style.display = 'block';
-    document.getElementById('notif-btn').textContent = '🔔 Alerts on';
-  } else {
-    alert('Permission denied. Events will still appear in the live feed.');
-  }
-}
+    <div id="tab-edit" style="display:none">
+      <div class="editor-wrap">
+        <p>Add players by name and role. Names must match the MLB Stats API (e.g. "Jesús Luzardo"). After editing, restart tracking to apply changes.</p>
+        <div class="add-player-row">
+          <input type="text" id="add-name" placeholder="Player name (e.g. Pete Alonso)" onkeydown="if(event.key==='Enter')addPlayer()">
+          <select id="add-role"><option value="hitter">Hitter</option><option value="pitcher">Pitcher</option></select>
+          <button class="btn primary" onclick="addPlayer()">+ Add</button>
+        </div>
+        <div class="edit-roster-list" id="edit-roster-list"></div>
+        <div class="editor-actions">
+          <button class="btn danger" onclick="clearRoster()">🗑 Clear all</button>
+        </div>
+      </div>
+    </div>
 
-function eventType(event){
-  const e = event.toLowerCase();
-  if(e.includes('home run')) return 'hr';
-  if(e.includes('single')||e.includes('double')||e.includes('triple')) return 'hit';
-  if(e.includes('walk')||e.includes('hit by pitch')) return 'walk';
-  if(e.includes('strikeout')) return 'k';
-  return 'out';
-}
+    <div id="tab-debug" style="display:none">
+      <div style="padding:10px 14px;font-size:12px;color:var(--text2);border-bottom:.5px solid var(--border)">
+        Shows how each player resolved to an MLB ID. Players marked ❌ won't be detected — their name likely doesn't match the MLB API exactly.
+      </div>
+      <div id="debug-list" style="max-height:500px;overflow-y:auto"></div>
+    </div>
+  </div>
 
-const BADGE = {
+  <!-- Right column -->
+  <div style="display:flex;flex-direction:column;gap:12px">
+    <div class="panel">
+      <div class="panel-header">Alert settings</div>
+      <div class="notif-row"><div><div class="notif-label">Lineup confirmed</div><div class="notif-sub">Player confirmed in today's lineup</div></div><label class="toggle"><input type="checkbox" id="chk-lineup" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Hits</div><div class="notif-sub">Singles, doubles, triples</div></div><label class="toggle"><input type="checkbox" id="chk-hits" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Home runs</div><div class="notif-sub">All HR events</div></div><label class="toggle"><input type="checkbox" id="chk-hr" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Strikeouts (hitters)</div><div class="notif-sub">When your hitter Ks</div></div><label class="toggle"><input type="checkbox" id="chk-k-hitter"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Other outs</div><div class="notif-sub">Groundouts, flyouts, etc.</div></div><label class="toggle"><input type="checkbox" id="chk-outs"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Walks & HBP</div><div class="notif-sub">Free passes for your hitters</div></div><label class="toggle"><input type="checkbox" id="chk-walks" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Errors</div><div class="notif-sub">When your player commits an error</div></div><label class="toggle"><input type="checkbox" id="chk-errors" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Pitcher inning start</div><div class="notif-sub">Pitcher takes the mound for a new inning</div></div><label class="toggle"><input type="checkbox" id="chk-inn-start" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Pitcher inning end</div><div class="notif-sub">Pitcher completes an inning</div></div><label class="toggle"><input type="checkbox" id="chk-innings" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Pitcher strikeouts</div><div class="notif-sub">Ks for your pitchers</div></div><label class="toggle"><input type="checkbox" id="chk-pks" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">All pitcher at-bats</div><div class="notif-sub">Every result while your pitcher throws</div></div><label class="toggle"><input type="checkbox" id="chk-pitcher-abs"><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+      <div class="notif-row"><div><div class="notif-label">Quality start alert</div><div class="notif-sub">Notify when pitcher achieves QS</div></div><label class="toggle"><input type="checkbox" id="chk-qs" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label></div>
+    </div>
+    <div class="panel">
+      <div class="panel-header"><span>Today's games</span><span class="refresh-time" id="last-refresh"></span></div>
+      <div id="games-list" style="color:var(--text2);font-size:13px;padding:12px 14px">Start tracking to load today's schedule.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const DEFAULT_ROSTER=[];
+
+let roster=[],HITTERS=[],PITCHERS=[],ALL=[];
+let polling=false,pollTimer=null;
+let seenPlays=new Set(),seenInnings=new Set(),seenInnStarts=new Set(),seenLineups=new Set();
+let activeGames=[],scheduledGames=[];
+let notifEnabled=false,mlbIdToName={},rosterLineupStatus={};
+let feedEvents=[];
+
+// Per-player stat tracking
+// hitter: {h,ab,hr,rbi,r,sb}
+// pitcher: {outs,er,k,bb,qsNotified,gamePk}
+let playerStats={};
+
+const COLORS=[{bg:"#E6F1FB",fg:"#185FA5"},{bg:"#EAF3DE",fg:"#3B6D11"},{bg:"#FAEEDA",fg:"#BA7517"},{bg:"#EEEDFE",fg:"#534AB7"},{bg:"#FAECE7",fg:"#993C1D"},{bg:"#FBEAF0",fg:"#993556"}];
+
+const BADGE={
   hit:'<span class="badge badge-hit">HIT</span>',
   hr:'<span class="badge badge-hr">HR 🚀</span>',
   out:'<span class="badge badge-out">OUT</span>',
-  walk:'<span class="badge badge-walk">BB</span>',
-  pitch:'<span class="badge badge-pitch">IP</span>',
   k:'<span class="badge badge-k">K</span>',
+  walk:'<span class="badge badge-walk">BB</span>',
+  pitch:'<span class="badge badge-pitch">INN END</span>',
+  'pitch-start':'<span class="badge badge-pitch">INN START</span>',
   lineup:'<span class="badge badge-lineup">LINEUP</span>',
-  'p-k':   '<span class="badge badge-k">K ✓</span>',
-  'p-hit': '<span class="badge badge-hr">HIT allowed</span>',
-  'p-hr':  '<span class="badge badge-hr">HR allowed 💣</span>',
+  error:'<span class="badge badge-error">ERROR</span>',
+  'p-k':'<span class="badge badge-k">K ✓</span>',
+  'p-hit':'<span class="badge badge-hr">HIT allowed</span>',
+  'p-hr':'<span class="badge badge-hr">HR allowed 💣</span>',
   'p-walk':'<span class="badge badge-walk">BB allowed</span>',
-  'p-out': '<span class="badge badge-out">OUT ✓</span>',
+  'p-out':'<span class="badge badge-out">OUT ✓</span>',
+  qs:'<span class="badge badge-hit">QS ⭐</span>',
 };
 
-function addEvent(player, desc, type){
-  const feed = document.getElementById('feed-list');
-  const empty = feed.querySelector('.feed-empty');
-  if(empty) empty.remove();
-  const now = new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
-  const card = document.createElement('div');
-  card.className = `event-card ${type}`;
-  card.innerHTML = `<div class="event-header"><span class="event-player">${player}${BADGE[type]||''}</span><span class="event-time">${now}</span></div><div class="event-desc">${desc}</div>`;
-  feed.insertBefore(card, feed.firstChild);
-
-  if(type==='hit'||type==='hr'){ hitCount++; document.getElementById('stat-hits').textContent = hitCount; }
-  if(type==='k'){ ksCount++; document.getElementById('stat-ks').textContent = ksCount; }
-
-  if(notifEnabled && Notification.permission==='granted'){
-    const labels = {hit:'Hit',hr:'Home Run! 🚀',walk:'Walk',out:'Out',k:'Strikeout',pitch:'Inning complete',lineup:'In the lineup','p-k':'Strikeout (pitching)','p-hit':'Hit allowed','p-hr':'Home run allowed 💣','p-walk':'Walk allowed','p-out':'Out recorded'};
-    new Notification(`${player} — ${labels[type]||type}`, {body: desc.slice(0,120)});
-  }
+// ── Roster ─────────────────────────────────────────────────────────────────
+function saveRoster(){try{localStorage.setItem('fbb_roster_v3',JSON.stringify(roster))}catch(e){}}
+function loadRoster(){
+  try{const s=localStorage.getItem('fbb_roster_v3');if(s){roster=JSON.parse(s);return}}catch(e){}
+  roster=[...DEFAULT_ROSTER];saveRoster();
+}
+function applyRoster(){
+  HITTERS=roster.filter(p=>p.role==='hitter').map(p=>p.name);
+  PITCHERS=roster.filter(p=>p.role==='pitcher').map(p=>p.name);
+  ALL=[...HITTERS,...PITCHERS];
+  document.getElementById('subtitle').textContent=`${ALL.length} players · ${HITTERS.length} hitters · ${PITCHERS.length} pitchers`;
+  // init stats
+  ALL.forEach(p=>{
+    if(!playerStats[p]){
+      playerStats[p]=HITTERS.includes(p)?{h:0,ab:0,hr:0,rbi:0,r:0,sb:0}:{outs:0,er:0,k:0,bb:0,qsNotified:false,gamePk:null};
+    }
+  });
+}
+function addPlayer(){
+  const nameEl=document.getElementById('add-name'),name=nameEl.value.trim(),role=document.getElementById('add-role').value;
+  if(!name)return;
+  if(roster.find(p=>p.name.toLowerCase()===name.toLowerCase())){alert(`${name} is already on your roster.`);return}
+  roster.push({name,role});saveRoster();applyRoster();renderEditRoster();renderRoster();nameEl.value='';nameEl.focus();
+}
+function removePlayer(name){
+  roster=roster.filter(p=>p.name!==name);saveRoster();applyRoster();renderEditRoster();renderRoster();
+}
+function clearRoster(){if(!confirm('Clear your entire roster?'))return;roster=[];saveRoster();applyRoster();renderEditRoster();renderRoster()}
+function loadDefaultRoster(){
+  if(roster.length&&!confirm('Replace with default roster?'))return;
+  roster=[...DEFAULT_ROSTER];saveRoster();applyRoster();renderEditRoster();renderRoster();
 }
 
-// ── Lineup / pre-game ──────────────────────────────────────────────────────
+// ── UI helpers ─────────────────────────────────────────────────────────────
+function normalize(s){return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^a-z\s]/g,'').trim()}
+function initials(n){return n.split(' ').map(p=>p[0]).join('').slice(0,2).toUpperCase()}
+function safeId(n){return 'p_'+n.replace(/[^a-z0-9]/gi,'_')}
+function ordinal(n){const s=["th","st","nd","rd"],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0])}
+function matchPlayer(list,fullName){
+  const norm=normalize(fullName);
+  return list.find(p=>{const parts=normalize(p).split(' ').filter(x=>x.length>1);return parts.every(pt=>norm.includes(pt))});
+}
+function eventType(event){
+  const e=event.toLowerCase();
+  if(e.includes('home run'))return'hr';
+  if(e.includes('single')||e.includes('double')||e.includes('triple'))return'hit';
+  if(e.includes('walk')||e.includes('hit by pitch'))return'walk';
+  if(e.includes('strikeout'))return'k';
+  return'out';
+}
 
+function switchTab(tab,btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  ['feed','hitter-stats','pitcher-stats','roster','edit','debug'].forEach(t=>{
+    document.getElementById('tab-'+t).style.display=t===tab?'':'none';
+  });
+  if(tab==='hitter-stats')renderHitterStats();
+  if(tab==='pitcher-stats')renderPitcherStats();
+}
+
+function updatePlayerStatus(name,text,cls){
+  const el=document.getElementById('ps_'+safeId(name));
+  if(!el)return;el.textContent=text;el.className='player-status '+(cls||'');
+}
+function updatePlayerGame(name,text){
+  const el=document.getElementById('pg_'+safeId(name));if(el)el.textContent=text;
+}
+
+async function requestNotifPermission(){
+  if(!('Notification' in window)){alert('Your browser does not support notifications.');return}
+  const p=await Notification.requestPermission();
+  notifEnabled=p==='granted';
+  if(notifEnabled){document.getElementById('notif-banner').style.display='block';document.getElementById('notif-btn').textContent='🔔 Alerts on'}
+  else alert('Permission denied. Events will still appear in the live feed.');
+}
+
+// ── Roster renders ─────────────────────────────────────────────────────────
+function renderRoster(){
+  const el=document.getElementById('roster-list');el.innerHTML='';
+  ['hitter','pitcher'].forEach(role=>{
+    const group=roster.filter(p=>p.role===role);if(!group.length)return;
+    el.innerHTML+=`<div class="section-label">${role==='hitter'?'Hitters':'Pitchers'}</div>`;
+    group.forEach((p,i)=>{
+      const c=COLORS[i%COLORS.length];
+      el.innerHTML+=`<div class="player-row">
+        <div class="player-avatar" style="background:${c.bg};color:${c.fg}">${initials(p.name)}</div>
+        <div class="player-info">
+          <div class="player-name">${p.name}</div>
+          <div class="player-meta">${role==='hitter'?'Hitter':'Pitcher'}</div>
+          <div class="player-game" id="pg_${safeId(p.name)}"></div>
+        </div>
+        <span class="player-status" id="ps_${safeId(p.name)}">—</span>
+      </div>`;
+    });
+  });
+}
+function renderEditRoster(){
+  const el=document.getElementById('edit-roster-list');
+  if(!roster.length){el.innerHTML='<div style="padding:14px;font-size:13px;color:var(--text2)">No players yet. Add one above.</div>';return}
+  el.innerHTML='';
+  ['hitter','pitcher'].forEach(role=>{
+    const group=roster.filter(p=>p.role===role);if(!group.length)return;
+    el.innerHTML+=`<div class="section-label">${role==='hitter'?'Hitters':'Pitchers'} (${group.length})</div>`;
+    group.forEach(p=>{
+      el.innerHTML+=`<div class="edit-player-row"><span style="flex:1">${p.name}</span><button class="remove-btn" onclick="removePlayer('${p.name.replace(/'/g,"\\'")}')">×</button></div>`;
+    });
+  });
+}
+
+// ── Stats renders ──────────────────────────────────────────────────────────
+function fmt(n,dec=0){return n===undefined?'0':dec>0?n.toFixed(dec):String(n)}
+function outsToIP(outs){return`${Math.floor(outs/3)}.${'02'[outs%3]||outs%3}`}
+
+function renderHitterStats(){
+  const tbody=document.getElementById('hitter-stats-body');tbody.innerHTML='';
+  if(!HITTERS.length){tbody.innerHTML='<tr><td colspan="8" style="padding:20px;color:var(--text2);text-align:center">No hitters on roster</td></tr>';return}
+  HITTERS.forEach(p=>{
+    const s=playerStats[p]||{h:0,ab:0,hr:0,rbi:0,r:0,sb:0};
+    const avg=s.ab>0?(s.h/s.ab).toFixed(3).replace(/^0/,''):'.000';
+    tbody.innerHTML+=`<tr>
+      <td>${p}</td>
+      <td class="num">${s.h}</td><td class="num">${s.ab}</td>
+      <td class="num">${avg}</td><td class="num">${s.hr}</td>
+      <td class="num">${s.rbi}</td><td class="num">${s.r}</td><td class="num">${s.sb}</td>
+    </tr>`;
+  });
+}
+function renderPitcherStats(){
+  const tbody=document.getElementById('pitcher-stats-body');tbody.innerHTML='';
+  if(!PITCHERS.length){tbody.innerHTML='<tr><td colspan="6" style="padding:20px;color:var(--text2);text-align:center">No pitchers on roster</td></tr>';return}
+  PITCHERS.forEach(p=>{
+    const s=playerStats[p]||{outs:0,er:0,k:0,bb:0,qsNotified:false};
+    const ip=outsToIP(s.outs);
+    const innings=s.outs/3;
+    const isQS=innings>=6&&s.er<=3;
+    const inProgress=s.outs>0&&s.gamePk&&activeGames.find(g=>g.pk===s.gamePk);
+    const qsCell=isQS?'<span class="qs-yes">✓ QS</span>':inProgress&&innings>=4?'<span class="qs-active">In progress</span>':'—';
+    tbody.innerHTML+=`<tr>
+      <td>${p}</td>
+      <td class="num">${ip}</td><td class="num">${s.er}</td>
+      <td class="num">${s.k}</td><td class="num">${s.bb}</td>
+      <td>${qsCell}</td>
+    </tr>`;
+  });
+}
+
+// ── Global stat summary ────────────────────────────────────────────────────
+function updateSummaryStats(){
+  let h=0,ab=0,hr=0,rbi=0,r=0,sb=0,outs=0,er=0,pk=0,bb=0,qs=0;
+  HITTERS.forEach(p=>{const s=playerStats[p]||{};h+=s.h||0;ab+=s.ab||0;hr+=s.hr||0;rbi+=s.rbi||0;r+=s.r||0;sb+=s.sb||0});
+  PITCHERS.forEach(p=>{const s=playerStats[p]||{};outs+=s.outs||0;er+=s.er||0;pk+=s.k||0;bb+=s.bb||0;if((s.outs/3)>=6&&s.er<=3)qs++});
+  const avg=ab>0?(h/ab).toFixed(3).replace(/^0/,''):'.000';
+  document.getElementById('stat-hab').textContent=`${h}/${ab}`;
+  document.getElementById('stat-hr').textContent=hr;
+  document.getElementById('stat-rbi').textContent=rbi;
+  document.getElementById('stat-r').textContent=r;
+  document.getElementById('stat-sb').textContent=sb;
+  document.getElementById('stat-ip').textContent=outsToIP(outs);
+  document.getElementById('stat-er').textContent=er;
+  document.getElementById('stat-pk').textContent=pk;
+  document.getElementById('stat-bb').textContent=bb;
+  document.getElementById('stat-qs').textContent=qs;
+}
+
+// ── Feed ───────────────────────────────────────────────────────────────────
+function addEvent(player,desc,type,tsOverride){
+  const ts=tsOverride||Date.now();
+  feedEvents.push({player,desc,type,ts});
+  renderFeed();
+  if(notifEnabled&&Notification.permission==='granted'){
+    const labels={hit:'Hit',hr:'Home Run! 🚀',walk:'Walk',out:'Out',k:'Strikeout',pitch:'Inning complete','pitch-start':'Starting inning',lineup:'In the lineup',error:'Error committed',qs:'Quality Start! ⭐','p-k':'Strikeout (pitching)','p-hit':'Hit allowed','p-hr':'Home run allowed 💣','p-walk':'Walk allowed','p-out':'Out recorded'};
+    new Notification(`${player} — ${labels[type]||type}`,{body:desc.slice(0,120)});
+  }
+}
+function renderFeed(){
+  const feed=document.getElementById('feed-list');
+  if(!feedEvents.length){feed.innerHTML='<div class="feed-empty">📻 Add your players in <strong>Edit roster</strong>, then hit <strong>Start tracking</strong>.</div>';return}
+  const sorted=[...feedEvents].sort((a,b)=>a.ts-b.ts);
+  feed.innerHTML=sorted.map(ev=>{
+    const time=new Date(ev.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    return`<div class="event-card ${ev.type}">
+      <div class="event-header"><span class="event-player">${ev.player}${BADGE[ev.type]||''}</span><span class="event-time">${time}</span></div>
+      <div class="event-desc">${ev.desc}</div>
+    </div>`;
+  }).join('');
+  feed.scrollTop=feed.scrollHeight;
+}
+
+// ── ID map ─────────────────────────────────────────────────────────────────
 async function buildPlayerIdMap(){
-  // Fetch all active MLB players for 2026 and build id→name map for our roster
-  try {
-    const r = await fetch('https://statsapi.mlb.com/api/v1/sports/1/players?season=2026');
-    const d = await r.json();
-    const people = d.people || [];
-    mlbIdToName = {};
-    people.forEach(person => {
-      const matched = matchPlayer(ALL, person.fullName);
-      if(matched) mlbIdToName[person.id] = matched;
+  try{
+    const r=await fetch('https://statsapi.mlb.com/api/v1/sports/1/players?season=2026');
+    const d=await r.json();
+    mlbIdToName={};window.debugIdMap={};
+    (d.people||[]).forEach(person=>{
+      const matched=matchPlayer(ALL,person.fullName);
+      if(matched){mlbIdToName[person.id]=matched;window.debugIdMap[matched]={id:person.id,apiName:person.fullName}}
     });
-    console.log('Player ID map built:', Object.keys(mlbIdToName).length, 'matched');
-  } catch(e) {
-    console.warn('Could not build player ID map:', e);
+    console.log('ID map:',Object.keys(mlbIdToName).length,'of',ALL.length,'matched');
+    renderDebugPanel();
+  }catch(e){console.warn('Could not build player ID map:',e)}
+}
+function renderDebugPanel(){
+  const el=document.getElementById('debug-list');el.innerHTML='';
+  const matched=Object.keys(window.debugIdMap||{});
+  const unmatched=ALL.filter(p=>!matched.includes(p));
+  if(unmatched.length){
+    el.innerHTML+=`<div class="section-label" style="color:#993C1D">❌ Not matched (${unmatched.length})</div>`;
+    unmatched.forEach(p=>{el.innerHTML+=`<div class="player-row" style="background:var(--red-bg)"><div style="font-size:18px;width:32px;text-align:center">❌</div><div class="player-info"><div class="player-name">${p}</div><div class="player-meta" style="color:#993C1D">No MLB ID found — check spelling or accents</div></div></div>`});
   }
+  el.innerHTML+=`<div class="section-label" style="color:var(--green-text)">✓ Matched (${matched.length})</div>`;
+  ALL.filter(p=>matched.includes(p)).forEach(p=>{
+    const info=window.debugIdMap[p];
+    const exact=normalize(p)===normalize(info.apiName);
+    el.innerHTML+=`<div class="player-row"><div style="font-size:16px;width:32px;text-align:center">✓</div><div class="player-info"><div class="player-name">${p}</div><div class="player-meta">ID: ${info.id} · API: <em>${info.apiName}</em>${!exact?' ⚠️':''}</div></div></div>`;
+  });
 }
 
+// ── Schedule ───────────────────────────────────────────────────────────────
 async function fetchSchedule(){
-  const today = new Date().toISOString().slice(0,10);
-  const r = await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${today}&hydrate=teams,linescore`);
-  const d = await r.json();
-  activeGames = []; scheduledGames = [];
-
-  const el = document.getElementById('games-list');
-  if(!d.dates || !d.dates[0] || !d.dates[0].games){
-    el.textContent = 'No MLB games today.'; return;
-  }
-
-  el.innerHTML = '';
-  d.dates[0].games.forEach(g => {
-    const awayFull = g.teams.away.team.name;
-    const homeFull = g.teams.home.team.name;
-    const away = awayFull.split(' ').pop();
-    const home = homeFull.split(' ').pop();
-    const state = g.status.detailedState;
-    const pk = g.gamePk;
-    const isLive = state==='In Progress'||state==='Manager Challenge';
-    const isFinal = state.includes('Final');
-    const isScheduled = !isLive && !isFinal;
-
-    if(isLive) activeGames.push({pk, away:awayFull, home:homeFull});
-    if(isScheduled) scheduledGames.push({pk, away:awayFull, home:homeFull, gameTime: g.gameDate});
-
-    const row = document.createElement('div');
-    row.className = 'game-row';
-
-    const ls = g.linescore;
-    const inn = ls ? `${ls.isTopInning?'▲':'▽'}${ls.currentInning}` : '';
-    const awayScore = ls ? (g.teams.away.score ?? '0') : null;
-    const homeScore = ls ? (g.teams.home.score ?? '0') : null;
-    const hasScore = awayScore !== null && (isLive || isFinal);
-    const stateStr = isLive && inn ? inn : state.replace('Final','F').replace('Scheduled','Sched').replace('Pre-Game','Pre').replace('In Progress','Live');
-    const stateStyle = isLive ? 'color:#3B6D11;font-weight:500' : isFinal ? 'color:var(--text2)' : 'color:var(--text2)';
-
-    // Find my players in this game
-    const myInGame = ALL.filter(p => {
-      const s = rosterLineupStatus[p];
-      return s && s.gamePk === pk;
-    });
-
-    const scoreHTML = hasScore
-      ? `<span style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${awayScore}–${homeScore}</span>`
-      : '';
-
-    row.innerHTML = `<div>
-      <div>${away} @ ${home}</div>
-      ${myInGame.length ? `<div class="game-my-players">Your players: ${myInGame.map(p=>p.split(' ').pop()).join(', ')}</div>` : ''}
-    </div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">${scoreHTML}<span style="${stateStyle}">${stateStr}</span></div>`;
+  const today=new Date().toISOString().slice(0,10);
+  const r=await fetch(`https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${today}&hydrate=teams,linescore`);
+  const d=await r.json();
+  activeGames=[];scheduledGames=[];
+  const el=document.getElementById('games-list');
+  if(!d.dates||!d.dates[0]||!d.dates[0].games){el.textContent='No MLB games today.';return}
+  el.innerHTML='';
+  d.dates[0].games.forEach(g=>{
+    const awayFull=g.teams.away.team.name,homeFull=g.teams.home.team.name;
+    const away=awayFull.split(' ').pop(),home=homeFull.split(' ').pop();
+    const state=g.status.detailedState,pk=g.gamePk;
+    const isLive=state==='In Progress'||state==='Manager Challenge',isFinal=state.includes('Final');
+    if(isLive)activeGames.push({pk,away:awayFull,home:homeFull});
+    if(!isLive&&!isFinal)scheduledGames.push({pk,away:awayFull,home:homeFull,gameTime:g.gameDate});
+    const ls=g.linescore,inn=ls?`${ls.isTopInning?'▲':'▽'}${ls.currentInning}`:'';
+    const awayScore=(isLive||isFinal)&&ls!=null?(g.teams.away.score??0):null;
+    const homeScore=(isLive||isFinal)&&ls!=null?(g.teams.home.score??0):null;
+    const hasScore=awayScore!==null;
+    const stateStr=isLive&&inn?inn:state.replace('Final','F').replace('Scheduled','Sched').replace('Pre-Game','Pre').replace('In Progress','Live');
+    const myInGame=ALL.filter(p=>{const s=rosterLineupStatus[p];return s&&s.gamePk===pk});
+    const row=document.createElement('div');row.className='game-row';
+    const scoreHTML=hasScore?`<span style="font-variant-numeric:tabular-nums;font-weight:600;color:var(--text)">${awayScore}–${homeScore}</span>`:'';
+    row.innerHTML=`<div><div>${away} @ ${home}</div>${myInGame.length?`<div class="game-my-players">Your players: ${myInGame.map(p=>p.split(' ').pop()).join(', ')}</div>`:''}</div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:2px">${scoreHTML}<span style="${isLive?'color:var(--green-text);font-weight:500':'color:var(--text2)'}">${stateStr}</span></div>`;
     el.appendChild(row);
   });
-
-  document.getElementById('last-refresh').textContent = 'Updated ' + new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('last-refresh').textContent='Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
 }
 
+// ── Lineups ────────────────────────────────────────────────────────────────
 async function checkLineups(){
-  // Check boxscores for all games (live + scheduled) to find confirmed lineups
-  const allGames = [...activeGames, ...scheduledGames];
-  let confirmedCount = 0;
-
+  const allGames=[...activeGames,...scheduledGames];let confirmedCount=0;
   for(const game of allGames){
-    try {
-      const r = await fetch(`https://statsapi.mlb.com/api/v1/game/${game.pk}/boxscore`);
-      const d = await r.json();
-
-      ['home','away'].forEach(side => {
-        const teamData = d.teams?.[side];
-        if(!teamData) return;
-
-        const battingOrder = teamData.battingOrder || [];
-        const pitchers = teamData.pitchers || [];
-        const teamName = teamData.team?.name || '';
-        const opponent = side==='home' ? d.teams?.away?.team?.name : d.teams?.home?.team?.name;
-        const opponentShort = (opponent||'').split(' ').pop();
-        const teamShort = teamName.split(' ').pop();
-
-        // Hitters in batting order
-        battingOrder.forEach((playerId, idx) => {
-          const fantasyName = mlbIdToName[playerId];
-          if(!fantasyName) return;
-          if(HITTERS.includes(fantasyName)){
-            confirmedCount++;
-            const lineupKey = `lineup-${game.pk}-${playerId}`;
-            rosterLineupStatus[fantasyName] = {
-              gamePk: game.pk, battingOrder: idx+1,
-              game: `${teamShort} vs ${opponentShort}`
-            };
-            updatePlayerStatus(fantasyName, `Bats ${ordinal(idx+1)}`, 'status-lineup');
-            updatePlayerGame(fantasyName, `${teamShort} vs ${opponentShort}`);
-
-            if(!seenLineups.has(lineupKey) && document.getElementById('chk-lineup').checked){
-              seenLineups.add(lineupKey);
-              addEvent(fantasyName, `Batting ${ordinal(idx+1)} · ${teamShort} vs ${opponentShort}`, 'lineup');
-            }
+    try{
+      const r=await fetch(`https://statsapi.mlb.com/api/v1/game/${game.pk}/boxscore`);
+      const d=await r.json();
+      ['home','away'].forEach(side=>{
+        const td=d.teams?.[side];if(!td)return;
+        const battingOrder=td.battingOrder||[],pitchers=td.pitchers||[];
+        const teamName=td.team?.name||'';
+        const opponent=side==='home'?d.teams?.away?.team?.name:d.teams?.home?.team?.name;
+        const oppShort=(opponent||'').split(' ').pop(),teamShort=teamName.split(' ').pop();
+        battingOrder.forEach((pid,idx)=>{
+          const fn=mlbIdToName[pid];if(!fn||!HITTERS.includes(fn))return;
+          confirmedCount++;
+          const lk=`lineup-${game.pk}-${pid}`;
+          rosterLineupStatus[fn]={gamePk:game.pk,battingOrder:idx+1,game:`${teamShort} vs ${oppShort}`};
+          updatePlayerStatus(fn,`Bats ${ordinal(idx+1)}`,'status-lineup');
+          updatePlayerGame(fn,`${teamShort} vs ${oppShort}`);
+          if(!seenLineups.has(lk)&&document.getElementById('chk-lineup').checked){
+            seenLineups.add(lk);addEvent(fn,`Batting ${ordinal(idx+1)} · ${teamShort} vs ${oppShort}`,'lineup');
           }
         });
+        if(pitchers.length>0){
+          const fn=mlbIdToName[pitchers[0]];if(!fn||!PITCHERS.includes(fn))return;
+          confirmedCount++;
+          const lk=`lineup-${game.pk}-${pitchers[0]}`;
+          rosterLineupStatus[fn]={gamePk:game.pk,game:`${teamShort} vs ${oppShort}`};
+          updatePlayerStatus(fn,'Starting','status-starting');
+          updatePlayerGame(fn,`${teamShort} vs ${oppShort}`);
+          if(!seenLineups.has(lk)&&document.getElementById('chk-lineup').checked){
+            seenLineups.add(lk);addEvent(fn,`Starting pitcher · ${teamShort} vs ${oppShort}`,'lineup');
+          }
+          // track gamePk for this pitcher for QS logic
+          if(!playerStats[fn])playerStats[fn]={outs:0,er:0,k:0,bb:0,qsNotified:false,gamePk:null};
+          playerStats[fn].gamePk=game.pk;
+        }
+      });
+    }catch(e){console.warn('Boxscore fetch failed',game.pk,e)}
+  }
+  document.getElementById('stat-lineup').textContent=confirmedCount||'0';
+}
 
-        // Starting pitcher: first pitcher listed before game starts, or check if they haven't been pulled
-        if(pitchers.length > 0){
-          const starterId = pitchers[0];
-          const fantasyName = mlbIdToName[starterId];
-          if(fantasyName && PITCHERS.includes(fantasyName)){
-            confirmedCount++;
-            const lineupKey = `lineup-${game.pk}-${starterId}`;
-            rosterLineupStatus[fantasyName] = {
-              gamePk: game.pk,
-              game: `${teamShort} vs ${opponentShort}`
-            };
-            updatePlayerStatus(fantasyName, 'Starting', 'status-starting');
-            updatePlayerGame(fantasyName, `${teamShort} vs ${opponentShort}`);
+// ── Play-by-play ───────────────────────────────────────────────────────────
+async function pollGame(gamePk){
+  const r=await fetch(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
+  const d=await r.json();
+  const plays=d.liveData?.plays?.allPlays||[];
+  // Also check for fielding errors in play events
+  let liveSet=new Set();
 
-            if(!seenLineups.has(lineupKey) && document.getElementById('chk-lineup').checked){
-              seenLineups.add(lineupKey);
-              addEvent(fantasyName, `Starting pitcher · ${teamShort} vs ${opponentShort}`, 'lineup');
-            }
+  // Group plays by inning half to detect first play of each half (inning start)
+  // Track {inning, halfInning} → first play index
+  const innFirstPlay={};
+  plays.forEach(play=>{
+    if(!play.about?.isComplete)return;
+    const key=`${gamePk}-${play.about.inning}-${play.about.halfInning}`;
+    if(innFirstPlay[key]===undefined)innFirstPlay[key]=play.atBatIndex;
+  });
+
+  plays.forEach(play=>{
+    if(!play.about?.isComplete)return;
+    const playId=`${gamePk}-${play.atBatIndex}`;
+    if(seenPlays.has(playId))return;
+    seenPlays.add(playId);
+
+    const batterName=play.matchup?.batter?.fullName||'';
+    const pitcherName=play.matchup?.pitcher?.fullName||'';
+    const event=play.result?.event||'';
+    const desc=play.result?.description||event;
+    const inning=play.about?.inning,half=play.about?.halfInning;
+    const playTs=play.about?.startTime?new Date(play.about.startTime).getTime():Date.now();
+
+    const hitter=matchPlayer(HITTERS,batterName);
+    const pitcher=matchPlayer(PITCHERS,pitcherName);
+
+    // ── Hitter events ──────────────────────────────────────────────────────
+    if(hitter){
+      liveSet.add(hitter);
+      updatePlayerStatus(hitter,'Live','status-live');
+      const s=playerStats[hitter]||(playerStats[hitter]={h:0,ab:0,hr:0,rbi:0,r:0,sb:0});
+      const type=eventType(event);
+      const ev=event.toLowerCase();
+
+      // AB tracking (plate appearances that count as ABs)
+      const isAB=!ev.includes('walk')&&!ev.includes('hit by pitch')&&!ev.includes('sac')&&!ev.includes('intent');
+      if(isAB)s.ab++;
+      if(type==='hit'||type==='hr'){s.h++}
+      if(type==='hr'){s.hr++}
+      if(play.result?.rbi)s.rbi+=play.result.rbi;
+      // Stolen bases detected in play description
+      if(ev.includes('steals'))s.sb++;
+
+      const isK=type==='k';
+      const notify=(type==='hit'&&document.getElementById('chk-hits').checked)
+        ||(type==='hr'&&document.getElementById('chk-hr').checked)
+        ||(isK&&document.getElementById('chk-k-hitter').checked)
+        ||(!isK&&type==='out'&&document.getElementById('chk-outs').checked)
+        ||(type==='walk'&&document.getElementById('chk-walks').checked);
+      if(notify)addEvent(hitter,desc,type,playTs);
+
+      updateSummaryStats();
+    }
+
+    // ── Scored runs (for R stat) - check runners who scored ────────────────
+    // MLB API play result includes runners who scored
+    if(play.runners){
+      play.runners.forEach(runner=>{
+        if(runner.movement?.end==='score'&&!runner.details?.isOut){
+          const scorerName=runner.details?.runner?.fullName||'';
+          const scorerH=matchPlayer(HITTERS,scorerName);
+          if(scorerH){
+            const s=playerStats[scorerH]||(playerStats[scorerH]={h:0,ab:0,hr:0,rbi:0,r:0,sb:0});
+            s.r++;updateSummaryStats();
+          }
+          // Stolen base: runner credited when movement reason is stolen base
+          if(runner.details?.eventType==='stolen_base'){
+            const sbH=matchPlayer(HITTERS,scorerName);
+            if(sbH){const s=playerStats[sbH]||(playerStats[sbH]={h:0,ab:0,hr:0,rbi:0,r:0,sb:0});s.sb++;updateSummaryStats()}
           }
         }
       });
-    } catch(e) {
-      console.warn('Boxscore fetch failed for', game.pk, e);
-    }
-  }
-
-  document.getElementById('stat-lineup').textContent = confirmedCount || '0';
-}
-
-// ── Live play-by-play ──────────────────────────────────────────────────────
-
-async function pollGame(gamePk){
-  const r = await fetch(`https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`);
-  const d = await r.json();
-  const plays = d.liveData?.plays?.allPlays || [];
-  let liveSet = new Set();
-
-  plays.forEach(play => {
-    if(!play.about?.isComplete) return;
-    const playId = `${gamePk}-${play.atBatIndex}`;
-    if(seenPlays.has(playId)) return;
-    seenPlays.add(playId);
-
-    const batterName  = play.matchup?.batter?.fullName  || '';
-    const pitcherName = play.matchup?.pitcher?.fullName || '';
-    const event = play.result?.event || '';
-    const desc  = play.result?.description || event;
-    const inning = play.about?.inning;
-    const half   = play.about?.halfInning;
-
-    const hitter  = matchPlayer(HITTERS,  batterName);
-    const pitcher = matchPlayer(PITCHERS, pitcherName);
-
-    if(hitter){
-      liveSet.add(hitter);
-      updatePlayerStatus(hitter, 'Live', 'status-live');
-      const type = eventType(event);
-      const chk = (type==='hit'&&document.getElementById('chk-hits').checked)
-        ||(type==='hr'&&document.getElementById('chk-hr').checked)
-        ||(type==='out'&&document.getElementById('chk-outs').checked)
-        ||(type==='walk'&&document.getElementById('chk-walks').checked);
-      if(chk) addEvent(hitter, desc, type);
     }
 
-    if(pitcher){
-      liveSet.add(pitcher);
-      updatePlayerStatus(pitcher, 'Pitching', 'status-live');
-
-      const isK    = event.toLowerCase().includes('strikeout');
-      const isHR   = event.toLowerCase().includes('home run');
-      const isHit  = /single|double|triple/.test(event.toLowerCase());
-      const isWalk = /walk|hit by pitch/.test(event.toLowerCase());
-      const isOut  = !isK && !isHR && !isHit && !isWalk;
-
-      // Individual K alert (always on its own toggle)
-      if(isK && document.getElementById('chk-pks').checked){
-        addEvent(pitcher, desc, 'p-k');
-      } else if(document.getElementById('chk-pitcher-abs').checked){
-        // Show every at-bat result from the pitcher's perspective
-        if(isHR)        addEvent(pitcher, desc, 'p-hr');
-        else if(isHit)  addEvent(pitcher, desc, 'p-hit');
-        else if(isWalk) addEvent(pitcher, desc, 'p-walk');
-        else if(isOut && !isK) addEvent(pitcher, desc, 'p-out');
-      }
-
-      // Inning completion (independent of above toggles)
-      if(document.getElementById('chk-innings').checked){
-        const innKey = `${gamePk}-${normalize(pitcherName)}-${inning}-${half}`;
-        const halfPlays = plays.filter(p2=>p2.about?.inning===inning&&p2.about?.halfInning===half&&p2.about?.isComplete);
-        const isLast = halfPlays.length>0 && halfPlays[halfPlays.length-1].atBatIndex===play.atBatIndex;
-        if(isLast && !seenInnings.has(innKey)){
-          seenInnings.add(innKey);
-          addEvent(pitcher, `Completed inning ${inning} (${half})`, 'pitch');
+    // ── Fielding errors (any player) ───────────────────────────────────────
+    if(document.getElementById('chk-errors').checked&&play.runners){
+      play.runners.forEach(runner=>{
+        if(runner.details?.eventType==='field_error'||runner.movement?.reason?.toLowerCase().includes('error')){
+          // Check fielding credits
+        }
+      });
+    }
+    // Check play description and credits for errors committed by our players
+    if(document.getElementById('chk-errors').checked){
+      const credits=play.credits||[];
+      credits.forEach(credit=>{
+        if((credit.credit||'').toLowerCase().includes('error')){
+          const fielderName=credit.player?.fullName||'';
+          const myFielder=matchPlayer(ALL,fielderName);
+          if(myFielder){
+            addEvent(myFielder,desc,'error',playTs);
+          }
+        }
+      });
+      // Also scan description for "error by" patterns
+      const errMatch=desc.match(/error by ([A-Z][a-z]+ [A-Z][a-zA-Z\.\-']+)/);
+      if(errMatch){
+        const myFielder=matchPlayer(ALL,errMatch[1]);
+        if(myFielder){
+          const errKey=`err-${gamePk}-${play.atBatIndex}-${myFielder}`;
+          if(!seenPlays.has(errKey)){seenPlays.add(errKey);addEvent(myFielder,desc,'error',playTs)}
         }
       }
     }
-  });
 
+    // ── Pitcher events ────────────────────────────────────────────────────
+    if(pitcher){
+      liveSet.add(pitcher);
+      updatePlayerStatus(pitcher,'Pitching','status-live');
+      const s=playerStats[pitcher]||(playerStats[pitcher]={outs:0,er:0,k:0,bb:0,qsNotified:false,gamePk});
+      if(!s.gamePk)s.gamePk=gamePk;
+
+      const isK=event.toLowerCase().includes('strikeout');
+      const isHR=event.toLowerCase().includes('home run');
+      const isHit=/single|double|triple/.test(event.toLowerCase());
+      const isWalk=/walk|hit by pitch/.test(event.toLowerCase());
+      const isOut=!isK&&!isHR&&!isHit&&!isWalk;
+
+      // Count outs recorded
+      if(play.result?.eventType==='out'||isK||(isOut&&!isHit&&!isWalk&&!isHR)){
+        const outsOnPlay=play.result?.description?.match(/(\d+) out/i);
+        s.outs+=1; // each complete plate appearance that ends in an out = 1 out recorded
+      }
+
+      // ER: count earned runs from linescore for accuracy
+      // We'll track via runners scoring off this pitcher
+      if(play.runners){
+        play.runners.forEach(runner=>{
+          if(runner.movement?.end==='score'&&!runner.details?.isOut&&!runner.details?.earned===false){
+            s.er++;
+          }
+        });
+      }
+
+      if(isK)s.k++;
+      if(isWalk)s.bb++;
+      updateSummaryStats();
+
+      // QS check: 6+ innings (18 outs), 3 or fewer ER
+      if(!s.qsNotified&&s.outs>=18&&s.er<=3){
+        s.qsNotified=true;
+        if(document.getElementById('chk-qs').checked){
+          addEvent(pitcher,`Quality start achieved — ${outsToIP(s.outs)} IP, ${s.er} ER`,'qs',playTs);
+        }
+      }
+
+      // Inning END
+      const innKey=`${gamePk}-${normalize(pitcherName)}-${inning}-${half}`;
+      const halfPlays=plays.filter(p2=>p2.about?.inning===inning&&p2.about?.halfInning===half&&p2.about?.isComplete);
+      const isLastInHalf=halfPlays.length>0&&halfPlays[halfPlays.length-1].atBatIndex===play.atBatIndex;
+      if(isLastInHalf&&!seenInnings.has(innKey)){
+        seenInnings.add(innKey);
+        if(document.getElementById('chk-innings').checked){
+          addEvent(pitcher,`Finished inning ${inning} (${half}) — ${outsToIP(s.outs)} IP so far, ${s.er} ER, ${s.k} K`,'pitch',playTs);
+        }
+      }
+
+      // Inning START: first play of a half-inning with this pitcher
+      const innStartKey=`${gamePk}-start-${normalize(pitcherName)}-${inning}-${half}`;
+      const innHalfKey=`${gamePk}-${inning}-${half}`;
+      if(innFirstPlay[innHalfKey]===play.atBatIndex&&!seenInnStarts.has(innStartKey)){
+        seenInnStarts.add(innStartKey);
+        if(document.getElementById('chk-inn-start').checked){
+          addEvent(pitcher,`Starting inning ${inning} (${half})`,'pitch-start',playTs);
+        }
+      }
+
+      // Individual K alert (separate from "all pitcher at-bats")
+      if(isK&&document.getElementById('chk-pks').checked){
+        addEvent(pitcher,desc,'p-k',playTs);
+      } else if(document.getElementById('chk-pitcher-abs').checked){
+        if(isHR)addEvent(pitcher,desc,'p-hr',playTs);
+        else if(isHit)addEvent(pitcher,desc,'p-hit',playTs);
+        else if(isWalk)addEvent(pitcher,desc,'p-walk',playTs);
+        else if(isOut&&!isK)addEvent(pitcher,desc,'p-out',playTs);
+      }
+    }
+  });
   return liveSet;
 }
 
-// ── Main poll loop ─────────────────────────────────────────────────────────
-
+// ── Main poll ──────────────────────────────────────────────────────────────
 async function runPoll(){
   setLoading(true);
-  try {
+  try{
     await fetchSchedule();
     await checkLineups();
-
-    let allLive = new Set();
-    for(const game of activeGames){
-      const s = await pollGame(game.pk);
-      s.forEach(p => allLive.add(p));
-    }
-    document.getElementById('stat-active').textContent = allLive.size || '0';
-
-    if(activeGames.length === 0 && scheduledGames.length === 0){
-      addEvent('MLB', 'No games found today.', 'pitch');
-    }
-  } catch(e) {
-    console.error('Poll error:', e);
-  }
+    let allLive=new Set();
+    for(const game of activeGames){const s=await pollGame(game.pk);s.forEach(p=>allLive.add(p))}
+    document.getElementById('stat-active').textContent=allLive.size||'0';
+  }catch(e){console.error('Poll error:',e)}
   setLoading(false);
 }
-
-function setLoading(on){
-  document.getElementById('loading-bar').style.display = on ? 'block' : 'none';
-}
+function setLoading(on){document.getElementById('loading-bar').style.display=on?'block':'none'}
 
 async function togglePolling(){
-  polling = !polling;
-  const btn = document.getElementById('poll-btn');
-  const pill = document.getElementById('live-pill');
-  const dot  = document.getElementById('live-dot');
-  const lbl  = document.getElementById('live-label');
-
+  polling=!polling;
+  const btn=document.getElementById('poll-btn'),dot=document.getElementById('live-dot'),pill=document.getElementById('live-pill'),lbl=document.getElementById('live-label');
   if(polling){
-    btn.textContent = '⏸ Stop tracking';
-    pill.classList.add('on');
-    dot.classList.add('live');
-    lbl.textContent = 'Live';
-    // Build player ID map once on first start
-    if(Object.keys(mlbIdToName).length === 0){
-      setLoading(true);
-      await buildPlayerIdMap();
-      setLoading(false);
-    }
-    await runPoll();
-    pollTimer = setInterval(runPoll, 45000);
-  } else {
-    clearInterval(pollTimer);
-    btn.textContent = '▶ Start tracking';
-    pill.classList.remove('on');
-    dot.classList.remove('live');
-    lbl.textContent = 'Offline';
-    setLoading(false);
+    btn.textContent='⏸ Stop tracking';pill.classList.add('on');dot.classList.add('live');lbl.textContent='Live';
+    if(Object.keys(mlbIdToName).length===0){setLoading(true);await buildPlayerIdMap();setLoading(false)}
+    await runPoll();pollTimer=setInterval(runPoll,45000);
+  }else{
+    clearInterval(pollTimer);btn.textContent='▶ Start tracking';pill.classList.remove('on');dot.classList.remove('live');lbl.textContent='Offline';setLoading(false);
   }
 }
 
-buildRoster();
+// Boot
+loadRoster();applyRoster();renderRoster();renderEditRoster();
 </script>
 </body>
 </html>
