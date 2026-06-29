@@ -142,7 +142,7 @@
 
   /* TABLE SECTION */
   .table-wrap { max-width: 1440px; margin: 24px auto; padding: 0 24px 48px; }
-  @media (max-width: 960px) { .table-wrap { padding: 0 12px 32px; } }
+  @media (max-width: 960px) { .table-wrap { padding: 0 12px 32px; } .table-container { overflow-x: auto; } }
   .table-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; flex-wrap: wrap; gap: 10px; }
   .table-header h2 { font-family: 'Roboto Slab', serif; font-weight: 500; font-size: 1.1rem; color: var(--text); }
   .search-wrap { position: relative; }
@@ -963,6 +963,7 @@ const mainChart = new Chart(canvas, {
           color: "#333638",
           autoSkip: false,
           maxRotation: 0,
+          textAlign: "left",
           callback(val) {
             const label = this.getLabelForValue(val);
             return label.length > 38 ? label.slice(0, 36) + "…" : label;
