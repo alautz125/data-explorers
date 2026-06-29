@@ -14,11 +14,11 @@
     --cut: #1b83c6;
     --cut-light: #daeef9;
     --cut-hover: #1461a0;
-    --raise: #b91f24;
-    --raise-light: #fce8e8;
-    --raise-hover: #8f1518;
-    --selected: #fcbb13;
-    --selected-dark: #c07d00;
+    --raise: #fcbb13;
+    --raise-light: #fff4d6;
+    --raise-hover: #8a5500;
+    --selected: #b91f24;
+    --selected-dark: #8f1518;
     --bg: #f2f3f3;
     --card-bg: #ffffff;
     --border: #d3d8d6;
@@ -135,7 +135,7 @@
   <div class="legend-item"><div class="legend-swatch" style="background:var(--cut)"></div> Tax cut (reduces revenue)</div>
   <div class="legend-item"><div class="legend-swatch" style="background:var(--raise)"></div> Tax increase (raises revenue)</div>
   <div class="legend-item"><div class="legend-swatch" style="background:var(--selected)"></div> Selected provision</div>
-  <span class="legend-note">Amounts in billions of dollars &nbsp;|&nbsp; Positive = tax cut &nbsp;|&nbsp; Negative = tax increase</span>
+  <span class="legend-note">Amounts in billions of dollars &nbsp;|&nbsp; Positive = tax cut &nbsp;|&nbsp; Negative = tax increase &nbsp;|&nbsp; * = Temporary provision</span>
 </div>
 
 <div class="main-wrap">
@@ -822,8 +822,8 @@ const sorted = [...provisions].sort((a,b) => b.tenYear - a.tenYear);
 // CHART CONFIG
 // ============================================================
 const CUT_COLOR    = "#1b83c6";
-const RAISE_COLOR  = "#b91f24";
-const SEL_COLOR    = "#fcbb13";
+const RAISE_COLOR  = "#fcbb13";
+const SEL_COLOR    = "#b91f24";
 
 function barColor(val, selected) {
   if (selected) return SEL_COLOR;
@@ -1002,7 +1002,7 @@ function selectProvision(key) {
   }
 
   const costEl = document.getElementById("cardCost");
-  costEl.textContent = formatCost(prov.tenYear);
+  costEl.textContent = formatCost(prov.tenYear) + (prov.temporary ? "*" : "");
   costEl.className = "card-cost " + (prov.tenYear >= 0 ? "cut" : "raise");
 
   const bulletsEl = document.getElementById("cardBullets");
@@ -1208,7 +1208,7 @@ function renderTable() {
   tbody.innerHTML = rows.map(p => {
     const isCut = p.tenYear >= 0;
     const chClass = CHAPTER_CLASS[p.chapter] || "";
-    const costStr = formatCost(p.tenYear);
+    const costStr = formatCost(p.tenYear) + (p.temporary ? "*" : "");
     return `<tr data-key="${p.key}" class="${p.key === selectedKey ? "selected" : ""}">
       <td class="provision-name">${p.name}${p.temporary ? ' <span class="temp-badge-table">Temporary</span>' : ''}</td>
       <td class="provision-section">${p.section}</td>
