@@ -188,7 +188,7 @@
   <div class="legend-item"><div class="legend-swatch" style="background:var(--cut)"></div> Tax cut (reduces revenue)</div>
   <div class="legend-item"><div class="legend-swatch" style="background:var(--raise)"></div> Tax increase (raises revenue)</div>
   <div class="legend-item"><div class="legend-swatch" style="background:var(--selected)"></div> Selected provision</div>
-  <span class="legend-note">Amounts in billions of dollars &nbsp;|&nbsp; Positive = tax cut &nbsp;|&nbsp; Negative = tax increase &nbsp;|&nbsp; * = Temporary provision; score is for 10 years but reflects the cost of only a few years of the policy</span>
+  <span class="legend-note">Amounts in billions of dollars &nbsp;|&nbsp; Negative = tax cut &nbsp;|&nbsp; Positive = tax increase &nbsp;|&nbsp; * = Temporary provision; score is for 10 years but reflects the cost of only a few years of the policy</span>
 </div>
 
 <div class="main-wrap">
@@ -223,7 +223,7 @@
           <canvas id="detailChart"></canvas>
         </div>
         <div class="card-extension" id="cardExtension" style="display:none">
-          <h4>If Extended: FY2027–2036 Cost (CBO/JCT, excl. net interest)</h4>
+          <h4>FY2025–2036: Actual Cost (bars) and Extension Scenario (dashed)</h4>
           <div class="extension-callout" id="extensionCallout"></div>
           <canvas id="extensionChart"></canvas>
         </div>
@@ -269,7 +269,7 @@ const provisions = [
     key:"reduced_rates", name:"Lower Individual Tax Rates", section:"Sec. 70101", chapter:"TCJA Extensions",
     yearlyValues:[0,147.7,222.2,232.7,241,249.8,259.4,269.7,279.9,291],
     bullets:[
-      "Permanently extends the lower individual income tax rates and brackets from TCJA, currently scheduled to expire after 2025.",
+      "Permanently extends the lower individual income tax rates and brackets from TCJA, was scheduled to expire after 2025.",
       "Provides an extra inflation adjustment to the bottom two brackets in 2026, which would result in lower tax bills for a significant share of taxpayers.",
       "Costs $2.2 trillion from fiscal years 2025–2034."
     ],
@@ -279,8 +279,8 @@ const provisions = [
     key:"standard_deduction", name:"Standard Deduction", section:"Sec. 70102", chapter:"TCJA Extensions",
     yearlyValues:[7.5,92.1,144.7,149.9,155.5,161.5,168.3,174.8,181.9,188.4],
     bullets:[
-      "Permanently extends the doubled standard deduction from TCJA, currently scheduled to revert to approximately half its current value after 2025.",
-      "Adds $750 to the standard deduction for single taxpayers and $1,500 for married couples in 2025—making it $16,150 for single filers and $32,300 for married couples.",
+      "Permanently extends the doubled standard deduction from TCJA, was scheduled to revert to approximately half its current value after 2025.",
+      "Adds $750 to the standard deduction for single taxpayers and $1,500 for married couples in 2025—making it $15,750 for single filers and $31,500 for married couples.",
       "Continues to adjust the standard deduction for inflation after 2025.",
       "Costs $1.4 trillion from fiscal years 2025–2034."
     ],
@@ -290,7 +290,7 @@ const provisions = [
     key:"personal_exemptions", name:"Permanent Repeal of Personal Exemptions", section:"Sec. 70103", chapter:"TCJA Extensions",
     yearlyValues:[0,-133.7,-196.5,-202.9,-210.5,-217.6,-224,-230.6,-238.4,-245.6],
     bullets:[
-      "Permanently repeals personal exemptions, currently scheduled to return in 2026.",
+      "Permanently repeals personal exemptions, was scheduled to return in 2026.",
       "Personal exemptions acted as an additional deduction based on family size. Under current law at TCJA expiration, they would be worth approximately $4,150 per person in the household.",
       "Raises $1.9 trillion from fiscal years 2025–2034."
     ],
@@ -312,7 +312,7 @@ const provisions = [
     key:"ctc", name:"Child Tax Credit", section:"Sec. 70104", chapter:"TCJA Extensions",
     yearlyValues:[0,48.8,87.6,90.2,92.7,95.3,97.6,99.3,101.9,103.5],
     bullets:[
-      "Permanently extends the $2,000 per child credit amount from TCJA, currently scheduled to revert to $1,000 per child after 2025.",
+      "Permanently extends the $2,000 per child credit amount from TCJA, was scheduled to revert to $1,000 per child after 2025.",
       "Adds $200 to the CTC in 2025—making the maximum credit $2,200 per child—and adjusts it for inflation after 2025.",
       "Permanently extends the refundable amount of the CTC (currently $1,700 per child), which is adjusted for inflation each year.",
       "Permanently extends the CTC phase-out, which starts at $200,000 for single taxpayers and $400,000 for married taxpayers.",
@@ -325,7 +325,7 @@ const provisions = [
     key:"pass_through", name:"Pass-Through Deduction (Sec. 199A)", section:"Sec. 70105", chapter:"TCJA Extensions",
     yearlyValues:[7,44.3,74.6,80.9,82.3,84.2,86.5,89.1,92,95.6],
     bullets:[
-      "Permanently extends the 20% deduction for pass-through business income from TCJA, currently scheduled to expire after 2025.",
+      "Permanently extends the 20% deduction for pass-through business income from TCJA, was scheduled to expire after 2025.",
       "Starting in 2026, provides a minimum $400 deduction for taxpayers with at least $1,000 in qualified business income from a pass-through entity.",
       "Costs $737 billion from fiscal years 2025–2034."
     ],
@@ -335,7 +335,7 @@ const provisions = [
     key:"estate", name:"Estate Taxes", section:"Sec. 70106", chapter:"TCJA Extensions",
     yearlyValues:[0,3.7,20.3,22.4,23.3,24.7,26.3,28.1,30.3,32.6],
     bullets:[
-      "Permanently extends the higher estate tax exemption from TCJA, currently scheduled to expire after 2025.",
+      "Permanently extends the higher estate tax exemption from TCJA, was scheduled to expire after 2025.",
       "Sets the exemption at $15 million in 2026 ($30 million for married couples), adjusted for inflation thereafter.",
       "Costs $212 billion from fiscal years 2025–2034."
     ],
@@ -345,7 +345,7 @@ const provisions = [
     key:"amt", name:"Alternative Minimum Tax", section:"Sec. 70107", chapter:"TCJA Extensions",
     yearlyValues:[0,76.8,137.5,139.7,147.3,155.4,163.5,172,180.7,189.8],
     bullets:[
-      "Generally extends the higher AMT exemption amounts and thresholds from TCJA—currently scheduled to revert to much lower amounts after 2025 and subject more income to the AMT—but resets the phaseout thresholds to $500,000 ($1 million for married couples), adjusted for inflation after 2026. This reset reduces AMT relief compared to a simple extension of TCJA.",
+      "Generally extends the higher AMT exemption amounts and thresholds from TCJA—was scheduled to revert to much lower amounts after 2025 and subject more income to the AMT—but resets the phaseout thresholds to $500,000 ($1 million for married couples), adjusted for inflation after 2026. This reset reduces AMT relief compared to a simple extension of TCJA.",
       "Costs $1.4 trillion from fiscal years 2025–2034."
     ],
     readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-the-alternative-minimum-tax-in-tcja/"
@@ -354,7 +354,7 @@ const provisions = [
     key:"mid", name:"Mortgage Interest Deduction", section:"Sec. 70108", chapter:"TCJA Extensions",
     yearlyValues:[0,-1.6,-3.1,-3.5,-4.1,-4.6,-5,-5.5,-5.8,-6.4],
     bullets:[
-      "Permanently extends the $750,000 limit for the mortgage interest deduction, currently scheduled to increase to a higher level after 2025.",
+      "Permanently extends the $750,000 limit for the mortgage interest deduction, was scheduled to increase to a higher level after 2025.",
       "For a home purchase with a 20% down payment, this effectively limits the mortgage interest deduction for purchases above approximately $937,500.",
       "Restores mortgage insurance premiums as interest eligible for the deduction.",
       "Raises $40 billion from fiscal years 2025–2034."
@@ -367,7 +367,7 @@ const provisions = [
     bullets:[
       "Permanently extends the limit on personal casualty losses from TCJA to only losses in a presidentially declared or state-declared natural disaster (Sec. 70109). Raises $1 billion.",
       "Permanently extends the repeal of miscellaneous itemized deductions from TCJA (Sec. 70110). Raises $232 billion.",
-      "Restores 'educator expenses' as an eligible itemized deduction, including unreimbursed books, supplies, and computer equipment expenses for teachers up to $250.",
+      "Restores 'educator expenses' as an eligible itemized deduction, including unreimbursed books, supplies, and computer equipment expenses for teachers.",
       "Raises $233 billion combined from fiscal years 2025–2034."
     ]
   },
@@ -376,7 +376,7 @@ const provisions = [
     yearlyValues:[0,16,26.4,27.6,28.4,29.3,30.2,31.3,32.4,33.8],
     bullets:[
       "Permanently extends the repeal of the pre-TCJA overall limitation on itemized deductions, known as the 'Pease' limitation.",
-      "Adds a new limitation on itemized deductions that effectively reduces the value of all itemized deductions for taxpayers in the 37% bracket.",
+      "Adds a new limitation on itemized deductions that effectively reduces the value of all itemized deductions for taxpayers in the top income bracket by two percentage points. In other words, a $100 itemized deduction for a taxpayer in the top bracket would equal a $35 reduction in tax liability instead of $37.",
       "Costs $256 billion from fiscal years 2025–2034."
     ],
     scoringNote: "Presents as a tax cut due to scoring quirks, but is actually a tax increase.",
@@ -463,7 +463,7 @@ const provisions = [
     key:"bonus_depreciation", name:"Bonus Depreciation / Full Expensing", section:"Sec. 70301", chapter:"Business Tax Provisions",
     yearlyValues:[33.5,65.1,65.2,57.5,40.8,29,21.6,17.8,16.3,15.9],
     bullets:[
-      "Establishes 100% bonus depreciation permanently for business investments in machinery, equipment, and other short-lived assets from Jan. 19, 2025, onward. See the table below for a comparison of bonus depreciation under current law vs. the 2025 Senate GOP tax bill.",
+      "Establishes 100% bonus depreciation permanently for business investments in machinery, equipment, and other short-lived assets from Jan. 19, 2025, onward.",
       "Costs $363 billion from fiscal years 2025–2034."
     ],
     readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-what-is-bonus-depreciation/"
@@ -472,7 +472,7 @@ const provisions = [
     key:"rd_expensing", name:"R&D Expensing", section:"Sec. 70302", chapter:"Business Tax Provisions",
     yearlyValues:[53.8,33.6,20.5,13.8,7.5,3.2,2.1,2.2,2.3,2.4],
     bullets:[
-      "Permanently restores full expensing for businesses' domestic research and development (R&D) investments, retroactive to the beginning of 2022.",
+      "Permanently restores full expensing for businesses' domestic research and development (R&D) investments, retroactive to the beginning of 2025.",
       "Allows retroactivity to the beginning of 2022 (not just 2025) for small businesses that meet an average annual gross receipts test.",
       "Allows all businesses with domestic R&D investments from 2022 through 2024 to accelerate any remaining deductions for those investments.",
       "Requires that foreign R&D investments still be amortized over 15 years.",
@@ -494,7 +494,7 @@ const provisions = [
     key:"45s", name:"45S Employer-Provided Paid Family and Medical Leave Credit", section:"Sec. 70304", chapter:"Business Tax Provisions",
     yearlyValues:[0,0.102,0.26,0.379,0.489,0.61,0.737,0.87,0.972,1.036],
     bullets:[
-      "Permanently extends the 45S credit from TCJA, currently scheduled to expire after 2025.",
+      "Permanently extends the 45S credit from TCJA, was scheduled to expire after 2025.",
       "Allows employers to use the credit to offset their premiums paid for insurance that provides employees with paid leave.",
       "Allows employers to use the credit where leave is required by a state or local government, if the leave provided exceeds the state or local requirement.",
       "Lowers the threshold at which an eligible worker can claim paid leave from one year to six months.",
@@ -538,7 +538,7 @@ const provisions = [
     key:"advanced_mfg_credit", name:"Advanced Manufacturing Investment Credit", section:"Sec. 70308", chapter:"Business Tax Provisions",
     yearlyValues:[0,1.728,2.876,3.566,2.14,0.858,1.024,1.057,0.868,0.794],
     bullets:[
-      "Increases the Sec. 48D advanced manufacturing investment tax credit from 25% of qualified investment to 35%, effective immediately upon enactment.",
+      "Increases the Sec. 48D advanced manufacturing investment tax credit from 25% of qualified investment to 35%, effective Jan. 1, 2026.",
       "The termination date for the credit remains December 31, 2026, so the enhanced credit amount would only be in place for one year.",
       "Costs $15 billion from fiscal years 2025–2034."
     ]
@@ -571,8 +571,8 @@ const provisions = [
     key:"adoption_credit", name:"Adoption Credit", section:"Secs. 70402–70403", chapter:"Individual & Family Provisions",
     yearlyValues:[0.189,0.419,0.301,0.301,0.183,0.184,0.185,0.186,0.187,0.189],
     bullets:[
-      "Makes up to $5,000 of the adoption credit <a href='https://bipartisanpolicy.org/explainer/tax-glossary/#:~:text=1%2C000%20(%242%2C000%20%E2%80%93%20%241%2C000).-,Refundable%20tax%20credit,-A%20refundable%20tax' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>refundable</a> (i.e., available even if a taxpayer has less than $5,000 in federal income tax liability) in 2025 and adjusts that refundable amount for inflation from 2026 onwards.",
-      "The current credit is up to $17,280 for taxpayers making up to $259,190 but is non-refundable.",
+      "Makes up to $5,000 of the adoption credit refundable (i.e., available even if a taxpayer has less than $5,000 in federal income tax liability) in 2025 and adjusts that refundable amount for inflation from 2026 onwards.",
+      "The 2025 credit was up to $17,280 for taxpayers making up to $259,190 but was non-refundable.",
       "Costs $2 billion from FY2025–2034."
     ]
   },
@@ -599,22 +599,15 @@ const provisions = [
     readMore:"https://bipartisanpolicy.org/article/bipartisan-wins-for-working-families-in-the-2025-reconciliation-package/"
   },
   {
-    key:"scholarship_credit", name:"Education Tax Provisions: Scholarship Credit & 529 Expansion", section:"Secs. 70411, 70413–70414", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0.022,0.54,2.662,3.149,3.544,3.86,4.161,4.38,4.607],
+    key:"scholarship_credit", name:"Education Tax Provisions: Scholarship Credit, 529 Expansion & Employer Educational Assistance", section:"Secs. 70411–70414", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.728,1.574,3.768,4.331,4.807,5.209,5.599,5.911,6.236],
     bullets:[
       "Sec. 70411 permanently creates a non-refundable income tax credit, from 2027 onwards, for charitable contributions made to scholarship-granting organizations that provide K–12 private or religious school scholarships.",
       "Secs. 70413 and 70414 expand eligible expenses for 529 accounts to certain elementary, secondary, home school, and postsecondary education expenses.",
-      "Costs a combined $38 billion from fiscal years 2025–2034 (including the employer educational assistance provision below)."
+      "Sec. 70412 makes the $5,250 tax exclusion for employer-provided educational assistance permanent, which was scheduled to expire after 2025.",
+      "Costs a combined $38 billion from fiscal years 2025–2034."
     ],
     readMore:"https://bipartisanpolicy.org/explainer/the-new-scholarship-tax-credit-potential-impacts-on-the-landscape-of-federal-k-12-funding/"
-  },
-  {
-    key:"employer_education", name:"Employer Educational Assistance Exclusion", section:"Sec. 70412", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0.706,1.034,1.106,1.182,1.263,1.349,1.438,1.531,1.629],
-    bullets:[
-      "Makes the $5,250 tax exclusion for employer-provided educational assistance permanent, currently scheduled to expire after 2025.",
-      "Costs approximately $11 billion from fiscal years 2025–2034."
-    ]
   },
   {
     key:"endowment_tax", name:"College Endowment Tax", section:"Sec. 70415", chapter:"Individual & Family Provisions",
@@ -657,7 +650,7 @@ const provisions = [
     key:"nmtc", name:"New Markets Tax Credit", section:"Sec. 70423", chapter:"Individual & Family Provisions",
     yearlyValues:[0,0,0.008,0.047,0.17,0.371,0.625,0.936,1.307,1.72],
     bullets:[
-      "Permanently extends the New Markets Tax Credit for investment in low-income communities, currently scheduled to expire after 2025.",
+      "Permanently extends the New Markets Tax Credit for investment in low-income communities, was scheduled to expire after 2025.",
       "Costs $5 billion from fiscal years 2025–2034."
     ]
   },
@@ -812,7 +805,7 @@ const provisions = [
     key:"carbon_capture", name:"Carbon Oxide Sequestration Credit", section:"Sec. 70522", chapter:"Clean Energy Provisions",
     yearlyValues:[0.2,0.4,0.6,0.8,1.1,1.4,1.8,2.2,2.7,3.1],
     bullets:[
-      "Extends or modifies the carbon oxide sequestration credit (Sec. 45Q) for carbon capture and storage projects.",
+      "Modifies the carbon oxide sequestration credit (Sec. 45Q) for carbon capture and storage projects.",
       "Part of combined additional clean energy provisions that cost approximately $43 billion from fiscal years 2025–2034."
     ]
   },
@@ -820,7 +813,7 @@ const provisions = [
     key:"energy_other", name:"Other Energy Tax Provisions", section:"Secs. 70523–70525", chapter:"Clean Energy Provisions",
     yearlyValues:[0,0.182,0.355,0.373,0.403,0.44,0.458,0.476,0.481,0.496],
     bullets:[
-      "Includes provisions related to intangible drilling costs (IDCs), publicly traded partnerships (PTPs), and individuals who dye fuel (Sec. 70525)."
+      "Includes provisions related to intangible drilling costs (IDCs), publicly traded partnerships (PTPs), and individuals who dye fuel."
     ]
   },
 
@@ -829,7 +822,7 @@ const provisions = [
     key:"pass_through_nols", name:"Net Operating Losses for Pass-Throughs", section:"Sec. 70601", chapter:"Pay-Fors",
     yearlyValues:[0,-0.1,-0.2,-0.1,-3.4,-5.1,-3.1,-2.5,-2.1,-1.9],
     bullets:[
-      "Makes permanent TCJA's limits on net operating losses (NOLs) for pass-through businesses. The limit is $313,000 for single taxpayers and $626,000 for married couples filing jointly.",
+      "Makes permanent TCJA's limits on net operating losses for pass-through businesses. The limit is $313,000 for single taxpayers in 2025 and $626,000 for married couples, adjusted for inflation.",
       "Applies excess business losses carried over from one year to the next in the limits for subsequent years.",
       "Establishes new rules for the tax treatment of excess business losses from the termination of an estate or trust.",
       "Raises $18 billion from fiscal years 2025–2034."
@@ -848,8 +841,8 @@ const provisions = [
     key:"executive_comp", name:"Deductions for Executive Compensation", section:"Sec. 70603", chapter:"Pay-Fors",
     yearlyValues:[0,-0.6,-1.5,-1.7,-1.8,-1.9,-1.9,-2,-2.1,-2.2],
     bullets:[
-      "Makes stricter the limits on deductibility for certain highly compensated employees by accounting for employees who may have changed positions.",
-      "The $1 million limit on deductibility for the CEO, CFO, and three other most highly-compensated employees of publicly held corporations is expanded.",
+      "Makes stricter the limits on deductibility for certain highly compensated employees by accounting for employees who may be compensated by several different affiliates of the same parent company.",
+      "The $1 million limit on deductibility for the CEO, CFO, and three other most highly-compensated employees of publicly held corporations (eight others from 2027 onwards) remains in place.",
       "Raises $16 billion from fiscal years 2025–2034."
     ]
   },
@@ -897,6 +890,7 @@ const EXTENSION_DATA = {
   clean_fuels:             { years:[0,0,0,5,10,12,13,13,14,14],   total:81  },
 };
 const EXTENSION_YEARS = [2027,2028,2029,2030,2031,2032,2033,2034,2035,2036];
+const COMBINED_YEARS  = [2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036];
 
 // Attach extension data to matching provisions
 provisions.forEach(p => {
@@ -941,7 +935,7 @@ const mainChart = new Chart(canvas, {
   data: {
     labels: sorted.map(p => p.name),
     datasets: [{
-      data: sorted.map(p => p.tenYear),
+      data: sorted.map(p => -p.tenYear),
       backgroundColor: sorted.map(p => barColor(p.tenYear, false)),
       borderColor: sorted.map(p => barColor(p.tenYear, false)),
       borderWidth: 0,
@@ -966,7 +960,7 @@ const mainChart = new Chart(canvas, {
             else if (abs >= 10) str = Math.round(abs) + "B";
             else if (abs >= 1) str = abs.toFixed(1).replace(/\.0$/,"") + "B";
             else str = Math.round(abs*1000) + "M";
-            return val >= 0 ? `  Tax cut: $${str}` : `  Tax increase: $${str}`;
+            return val <= 0 ? `  Tax cut: $${str}` : `  Tax increase: $${str}`;
           }
         },
         backgroundColor: "#1f476c",
@@ -1118,7 +1112,7 @@ function selectProvision(key) {
     data: {
       labels: YEARS.map(String),
       datasets: [{
-        data: prov.yearlyValues,
+        data: prov.yearlyValues.map(v => -v),
         borderColor: color,
         backgroundColor: color + "22",
         borderWidth: 2,
@@ -1143,7 +1137,7 @@ function selectProvision(key) {
               if (abs >= 10) s = "$" + Math.round(abs) + "B";
               else if (abs >= 1) s = "$" + abs.toFixed(1).replace(/\.0$/,"") + "B";
               else s = "$" + Math.round(abs*1000) + "M";
-              return v >= 0 ? "  Cut: " + s : "  Raise: " + s;
+              return v <= 0 ? "  Cut: " + s : "  Raise: " + s;
             }
           }
         }
@@ -1188,16 +1182,38 @@ function selectProvision(key) {
       `Extending this provision after its expiration would cost $${extTotal} billion from FY2027–2036. ` +
       `Source: CBO/JCT. Does not include net interest costs.`;
     const extCtx = document.getElementById("extensionChart").getContext("2d");
+    const extBarColors = [
+      ...prov.yearlyValues.map(v => v >= 0 ? CUT_COLOR : RAISE_COLOR),
+      "transparent", "transparent"
+    ];
     extensionChartInstance = new Chart(extCtx, {
       type: "bar",
       data: {
-        labels: EXTENSION_YEARS.map(String),
-        datasets: [{
-          data: ed.years,
-          backgroundColor: ed.years.map(v => v > 0 ? CUT_COLOR : v < 0 ? RAISE_COLOR : "#d3d8d6"),
-          borderRadius: 2,
-          borderSkipped: false
-        }]
+        labels: COMBINED_YEARS.map(String),
+        datasets: [
+          {
+            label: "Actual Cost",
+            data: [...prov.yearlyValues.map(v => -v), null, null],
+            backgroundColor: extBarColors,
+            borderRadius: 2,
+            borderSkipped: false,
+            order: 2
+          },
+          {
+            label: "Extension",
+            type: "line",
+            data: [null, null, ...ed.years.map(v => -v)],
+            borderColor: "#1f476c",
+            backgroundColor: "transparent",
+            borderWidth: 2,
+            borderDash: [5, 5],
+            pointRadius: 3,
+            pointHoverRadius: 5,
+            pointBackgroundColor: "#1f476c",
+            tension: 0.3,
+            order: 1
+          }
+        ]
       },
       options: {
         responsive: true,
@@ -1209,15 +1225,18 @@ function selectProvision(key) {
             callbacks: {
               label(ctx) {
                 const v = ctx.raw;
+                if (v === null || v === undefined) return null;
                 if (v === 0) return "  $0";
                 const abs = Math.abs(v);
                 let s;
                 if (abs >= 10) s = "$" + Math.round(abs) + "B";
                 else if (abs >= 1) s = "$" + abs.toFixed(1).replace(/\.0$/,"") + "B";
                 else s = "$" + Math.round(abs*1000) + "M";
-                return `  ${v >= 0 ? "Costs " : "Raises "}${s}`;
+                const prefix = ctx.dataset.label === "Extension" ? "  Extension: " : "  ";
+                return prefix + (v <= 0 ? "Costs " : "Raises ") + s;
               }
             },
+            filter(item) { return item.raw !== null && item.raw !== undefined; },
             backgroundColor: "#1f476c",
             bodyFont: { family: "'Faustina', serif", size: 11 },
             padding: 8,
