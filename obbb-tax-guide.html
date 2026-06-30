@@ -345,7 +345,7 @@ const provisions = [
     key:"amt", name:"Alternative Minimum Tax", section:"Sec. 70107", chapter:"TCJA Extensions",
     yearlyValues:[0,76.8,137.5,139.7,147.3,155.4,163.5,172,180.7,189.8],
     bullets:[
-      "Permanently extends the higher AMT exemption amounts and thresholds from TCJA—currently scheduled to revert to much lower levels after 2025.",
+      "Generally extends the higher AMT exemption amounts and thresholds from TCJA—currently scheduled to revert to much lower amounts after 2025 and subject more income to the AMT—but resets the phaseout thresholds to $500,000 ($1 million for married couples), adjusted for inflation after 2026. This reset reduces AMT relief compared to a simple extension of TCJA.",
       "Costs $1.4 trillion from fiscal years 2025–2034."
     ],
     readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-the-alternative-minimum-tax-in-tcja/"
@@ -399,7 +399,7 @@ const provisions = [
     key:"tcja_other", name:"Additional TCJA Extensions", section:"Secs. 70112–70119", chapter:"TCJA Extensions",
     yearlyValues:[0,-0.6,-1.2,-1.3,-1.4,-1.4,-1.5,-1.6,-1.6,-1.7],
     bullets:[
-      "Extends a number of smaller tax provisions from TCJA, including its repeal of the tax exclusion for bicycle commuting reimbursements and the deduction for moving expenses for non-military taxpayers.",
+      "Extends a number of smaller tax provisions from TCJA, including its repeal of the tax exclusion for bicycle commuting reimbursements, the exclusion and deduction for moving expenses (other than for members of the Armed Forces), and tax provisions concerning Achieving a Better Life Experience (ABLE) accounts for people with disabilities.",
       "Raises $12 billion from fiscal years 2025–2034."
     ]
   },
@@ -410,7 +410,7 @@ const provisions = [
     yearlyValues:[0,10.1,7.7,8.1,5.3,0.1,0.1,0.1,0.1,0.1],
     bullets:[
       "Adds a deduction for qualified tips from 2025 through 2028.",
-      "Includes a $25,000 limit on the amount of the deduction, and the deduction is generally limited to occupations that the IRS traditionally treats as eligible for tip income.",
+      "Includes a $25,000 limit on the amount of the deduction, and the deduction is generally limited to occupations that the Treasury Secretary certifies 'customarily and regularly' received tips before 2025. The deduction phases out at a 10% rate for single taxpayers making more than $150,000 and married couples making more than $300,000.",
       "The tips deduction is available whether a taxpayer takes the standard deduction or itemizes their deductions.",
       "Costs $31 billion from fiscal years 2025–2034."
     ],
@@ -463,7 +463,7 @@ const provisions = [
     key:"bonus_depreciation", name:"Bonus Depreciation / Full Expensing", section:"Sec. 70301", chapter:"Business Tax Provisions",
     yearlyValues:[33.5,65.1,65.2,57.5,40.8,29,21.6,17.8,16.3,15.9],
     bullets:[
-      "Establishes 100% bonus depreciation permanently for business investments in machinery, equipment, and other short-lived assets.",
+      "Establishes 100% bonus depreciation permanently for business investments in machinery, equipment, and other short-lived assets from Jan. 19, 2025, onward. See the table below for a comparison of bonus depreciation under current law vs. the 2025 Senate GOP tax bill.",
       "Costs $363 billion from fiscal years 2025–2034."
     ],
     readMore:"https://bipartisanpolicy.org/explainer/the-2025-tax-debate-what-is-bonus-depreciation/"
@@ -484,7 +484,7 @@ const provisions = [
     key:"interest_deductions", name:"Business Interest Deductions", section:"Sec. 70303", chapter:"Business Tax Provisions",
     yearlyValues:[8.3,6.5,6.2,5.7,5.3,5.3,5.5,5.5,6,6.2],
     bullets:[
-      "Permanently restores a more generous interest deduction limit that was in place from 2018 through 2021 under TCJA, retroactive to the beginning of 2022.",
+      "Permanently restores a more generous interest deduction limit that was in place from 2018 through 2021 under TCJA, retroactive from January 1, 2025 onwards.",
       "The more generous limit is based on earnings before interest, taxes, depreciation, and amortization (EBITDA) rather than earnings before interest and taxes (EBIT).",
       "Costs $61 billion from fiscal years 2025–2034."
     ],
@@ -492,7 +492,7 @@ const provisions = [
   },
   {
     key:"45s", name:"45S Employer-Provided Paid Family and Medical Leave Credit", section:"Sec. 70304", chapter:"Business Tax Provisions",
-    yearlyValues:[0,0.1,0.3,0.4,0.5,0.6,0.7,0.9,1,1],
+    yearlyValues:[0,0.102,0.26,0.379,0.489,0.61,0.737,0.87,0.972,1.036],
     bullets:[
       "Permanently extends the 45S credit from TCJA, currently scheduled to expire after 2025.",
       "Allows employers to use the credit to offset their premiums paid for insurance that provides employees with paid leave.",
@@ -536,10 +536,10 @@ const provisions = [
   },
   {
     key:"advanced_mfg_credit", name:"Advanced Manufacturing Investment Credit", section:"Sec. 70308", chapter:"Business Tax Provisions",
-    yearlyValues:[0,1.7,2.9,3.6,2.1,0.9,1,1.1,0.9,0.8],
+    yearlyValues:[0,1.728,2.876,3.566,2.14,0.858,1.024,1.057,0.868,0.794],
     bullets:[
       "Increases the Sec. 48D advanced manufacturing investment tax credit from 25% of qualified investment to 35%, effective immediately upon enactment.",
-      "The termination date for the credit remains December 31, 2026, so the enhanced credit amount would only be in place for one to two years.",
+      "The termination date for the credit remains December 31, 2026, so the enhanced credit amount would only be in place for one year.",
       "Costs $15 billion from fiscal years 2025–2034."
     ]
   },
@@ -560,16 +560,25 @@ const provisions = [
   // ===== CHAPTER 4: INDIVIDUAL & FAMILY =====
   {
     key:"employer_childcare", name:"45F Employer-Provided Child Care Credit", section:"Sec. 70401", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0,0.1,0.1,0.1,0.1,0.1,0.1,0.1,0.1],
+    yearlyValues:[0,0.045,0.072,0.076,0.08,0.084,0.088,0.093,0.098,0.094],
     bullets:[
-      "Expands the 45F credit, starting in 2026, in a number of ways: increases the credit rate for a business's child care expenditures, raises the per-employee and per-year caps, and adds new categories of eligible expenses.",
+      "Expands the 45F credit, starting in 2026, in a number of ways: 1) increases the credit rate for a business's child care expenditures from 25% to 40% (and 50% for small businesses with receipts less than $31 million); 2) increases the maximum credit from $150,000 to $500,000 ($600,000 for small businesses); 3) allows businesses to receive the credit for contracting with a third party to provide child care services; and 4) allows businesses to jointly own or operate child care facilities and claim the credit.",
       "Costs $731 million from fiscal years 2025–2034."
     ],
     readMore:"https://bipartisanpolicy.org/article/bipartisan-wins-for-working-families-in-the-2025-reconciliation-package/"
   },
   {
+    key:"adoption_credit", name:"Adoption Credit", section:"Secs. 70402–70403", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.189,0.419,0.301,0.301,0.183,0.184,0.185,0.186,0.187,0.189],
+    bullets:[
+      "Makes up to $5,000 of the adoption credit <a href='https://bipartisanpolicy.org/explainer/tax-glossary/#:~:text=1%2C000%20(%242%2C000%20%E2%80%93%20%241%2C000).-,Refundable%20tax%20credit,-A%20refundable%20tax' target='_blank' rel='noopener' style='color:#3c608a;font-weight:600;'>refundable</a> (i.e., available even if a taxpayer has less than $5,000 in federal income tax liability) in 2025 and adjusts that refundable amount for inflation from 2026 onwards.",
+      "The current credit is up to $17,280 for taxpayers making up to $259,190 but is non-refundable.",
+      "Costs $2 billion from FY2025–2034."
+    ]
+  },
+  {
     key:"dcaps", name:"Dependent Care Assistance Programs", section:"Sec. 70404", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0.4,0.6,0.6,0.6,0.7,0.7,0.8,0.8,0.8],
+    yearlyValues:[0,0.365,0.565,0.614,0.648,0.684,0.719,0.754,0.793,0.83],
     bullets:[
       "Increases the tax exclusion for DCAPs to $7,500 ($3,750 for married filing separately) from $5,000 under current law ($2,500 for married filing separately).",
       "Costs $6 billion from fiscal years 2025–2034."
@@ -591,7 +600,7 @@ const provisions = [
   },
   {
     key:"scholarship_credit", name:"Education Tax Provisions: Scholarship Credit & 529 Expansion", section:"Secs. 70411, 70413–70414", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0,0.5,2.7,3.1,3.5,3.9,4.2,4.4,4.6],
+    yearlyValues:[0,0.022,0.54,2.662,3.149,3.544,3.86,4.161,4.38,4.607],
     bullets:[
       "Sec. 70411 permanently creates a non-refundable income tax credit, from 2027 onwards, for charitable contributions made to scholarship-granting organizations that provide K–12 private or religious school scholarships.",
       "Secs. 70413 and 70414 expand eligible expenses for 529 accounts to certain elementary, secondary, home school, and postsecondary education expenses.",
@@ -601,25 +610,23 @@ const provisions = [
   },
   {
     key:"employer_education", name:"Employer Educational Assistance Exclusion", section:"Sec. 70412", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0.7,1,1.1,1.2,1.3,1.3,1.4,1.5,1.6],
+    yearlyValues:[0,0.706,1.034,1.106,1.182,1.263,1.349,1.438,1.531,1.629],
     bullets:[
       "Makes the $5,250 tax exclusion for employer-provided educational assistance permanent, currently scheduled to expire after 2025.",
-      "Allows employees to use employer-provided educational assistance for employer student loan repayment assistance.",
       "Costs approximately $11 billion from fiscal years 2025–2034."
     ]
   },
   {
     key:"endowment_tax", name:"College Endowment Tax", section:"Sec. 70415", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1,-0.1],
+    yearlyValues:[0,0,-0.08,-0.091,-0.087,-0.092,-0.096,-0.1,-0.105,-0.11],
     bullets:[
       "Creates a graduated rate structure for the excise tax on college endowments, which currently stands at 1.4%.",
-      "Expands the endowment tax to a larger number of colleges.",
       "Raises approximately $1 billion from fiscal years 2025–2034."
     ]
   },
   {
     key:"nonprofit_comp", name:"Nonprofit Executive Compensation Excise Tax", section:"Sec. 70416", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,-0.2,-0.3,-0.4,-0.4,-0.4,-0.5,-0.5,-0.5,-0.6],
+    yearlyValues:[0,-0.236,-0.334,-0.362,-0.393,-0.426,-0.462,-0.501,-0.543,-0.589],
     bullets:[
       "Expands the excise tax on over $1 million in compensation (or 'parachute payments') for highly-paid employees of tax-exempt organizations.",
       "Raises approximately $4 billion from fiscal years 2025–2034."
@@ -627,10 +634,10 @@ const provisions = [
   },
   {
     key:"ozs", name:"Opportunity Zones", section:"Sec. 70421", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0,7.9,12,10.4,5.6,5.9,3.8,-2.9,-1.7],
+    yearlyValues:[0,0,7.876,12.017,10.427,5.628,5.86,3.819,-2.949,-1.741],
     bullets:[
       "Establishes a new, permanent opportunity zone program, with OZ designations every 10 years starting as early as January 1, 2027.",
-      "Tightens the requirement for OZ designations to be in low-income census tracts, with median family income not exceeding 80% of the area median.",
+      "Tightens the requirement for OZ designations to be in low-income census tracts, with median family income not exceeding 70% of statewide median income (as opposed to 80% in current law).",
       "Requires realization of gains in the fifth year of any given 10-year OZ window.",
       "Provides a bonus 'basis boost' for OZs in rural areas—30% of the investment instead of 10%.",
       "Costs $41 billion from fiscal years 2025–2034."
@@ -638,7 +645,7 @@ const provisions = [
   },
   {
     key:"lihtc", name:"Low-Income Housing Tax Credit", section:"Sec. 70422", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0,0.2,0.6,1.1,1.6,2.1,2.7,3.3,4],
+    yearlyValues:[0,0.039,0.217,0.579,1.06,1.591,2.149,2.735,3.345,3.975],
     bullets:[
       "Permanently increases LIHTC allocations to states by 12% from 2026 onwards.",
       "Permanently lowers the threshold for LIHTC that applies to buildings financed with tax-exempt bonds, from a minimum of 50% to a minimum of 25% bond financing.",
@@ -648,7 +655,7 @@ const provisions = [
   },
   {
     key:"nmtc", name:"New Markets Tax Credit", section:"Sec. 70423", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0,0,0,0.2,0.4,0.6,0.9,1.3,1.7],
+    yearlyValues:[0,0,0.008,0.047,0.17,0.371,0.625,0.936,1.307,1.72],
     bullets:[
       "Permanently extends the New Markets Tax Credit for investment in low-income communities, currently scheduled to expire after 2025.",
       "Costs $5 billion from fiscal years 2025–2034."
@@ -656,7 +663,7 @@ const provisions = [
   },
   {
     key:"charitable_individual", name:"Individual Charitable Deductions (Net)", section:"Secs. 70424–70425", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0.2,0.7,0.9,1.1,1.4,1.5,1.5,1.6,1.6],
+    yearlyValues:[0,0.197,0.708,0.937,1.134,1.414,1.479,1.542,1.607,1.624],
     bullets:[
       "Sec. 70424 creates a deduction for charitable contributions from 2026 onwards for those who do not itemize deductions, equal to $1,000 for single taxpayers and $2,000 for married couples filing jointly. Costs $74 billion.",
       "Sec. 70425 sets a 0.5%-of-income floor on the itemized charitable deduction and permanently extends TCJA's 60%-of-AGI ceiling for cash charitable deductions. Raises $63 billion.",
@@ -666,7 +673,7 @@ const provisions = [
   },
   {
     key:"charitable_corporate", name:"Floor on Corporate Charitable Deductions", section:"Sec. 70426", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,-1.3,-1.9,-2.1,-2,-1.8,-1.8,-1.8,-2,-2],
+    yearlyValues:[0,-1.276,-1.872,-2.142,-1.964,-1.832,-1.787,-1.816,-1.953,-1.962],
     bullets:[
       "Sets a 1%-of-taxable income floor for corporations seeking to deduct charitable contributions, adding to an existing 10% ceiling.",
       "Raises $17 billion from fiscal years 2025–2034."
@@ -674,8 +681,40 @@ const provisions = [
     readMore:"https://bipartisanpolicy.org/issue-brief/how-the-new-charitable-deduction-floors-work/"
   },
   {
+    key:"rum_cover", name:"Rum Cover Over", section:"Sec. 70427", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.251,0.208,0.208,0.208,0.208,0.208,0.208,0.208,0.208],
+    bullets:[
+      "Permanently increases the amount of excise taxes on distilled spirits returned to Puerto Rico and the Virgin Islands from the U.S. Treasury, from $10.50 per proof gallon to $13.25.",
+      "Costs $2 billion from FY2025–2034."
+    ]
+  },
+  {
+    key:"native_villages", name:"Non-Profit Community Development in Native Villages", section:"Sec. 70428", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003,0.0003],
+    bullets:[
+      "Allows fishing activities conducted by remote native villages in the Bering Sea and Aleutian Islands of Alaska to be considered tax-exempt, not-for-profit activities.",
+      "Costs $3 million from FY2025–2034."
+    ]
+  },
+  {
+    key:"alaska_whaling", name:"Alaska Native Subsistence Whaling", section:"Sec. 70429", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0,0.001,0.001,0.001,0.001,0.001,0.001,0.001,0.001],
+    bullets:[
+      "Allows native Alaskan whaling captains to treat up to $50,000 of whaling expenses as charitable contributions (eligible for a deduction), up from $10,000 in current law.",
+      "Costs $5 million from FY2025–2034."
+    ]
+  },
+  {
+    key:"residential_construction", name:"Accounting for Residential Construction", section:"Sec. 70430", chapter:"Individual & Family Provisions",
+    yearlyValues:[0,0.638,0.557,0.33,0.214,0.109,0.077,0.077,0.079,0.08],
+    bullets:[
+      "Provides an exception to the 'percentage of completion' method for income realization for tax purposes, for certain residential construction contracts.",
+      "Costs $2 billion from FY2025–2034."
+    ]
+  },
+  {
     key:"qsbs", name:"Qualified Small Business Stock", section:"Sec. 70431", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,-0.1,-0.1,0,0.2,1.2,3.5,3.9,4.2,4.5],
+    yearlyValues:[-0.027,-0.056,-0.057,-0.038,0.193,1.204,3.47,3.857,4.153,4.487],
     bullets:[
       "Provides a more generous tax exclusion for qualified small business stock (QSBS): 50% exclusion for stock held at least three years, 75% for at least four years, and 100% for at least five years.",
       "Increases the per-issuer cap on QSBS from $10 million to $15 million, indexed to inflation from 2027 onwards.",
@@ -684,19 +723,20 @@ const provisions = [
   },
   {
     key:"other_credits", name:"Other Business & Individual Tax Provisions", section:"Secs. 70432–70439", chapter:"Individual & Family Provisions",
-    yearlyValues:[0.4,4,5.5,4.4,3.3,2.6,2.9,3.3,3.6,3.9],
+    yearlyValues:[0.208,2.732,4.406,3.596,2.65,2.107,2.468,2.786,3.09,3.377],
     bullets:[
       "Sec. 70432 restores pre-2022 thresholds for IRS information reporting from third-party settlement organizations such as PayPal and Venmo. Costs $13 billion.",
       "Sec. 70434 extends expensing allowances to sound recording production costs incurred in the U.S., up to $150,000 per year.",
       "Sec. 70436 eliminates excise taxes on silencers, short-barreled rifles, and short-barreled shotguns, currently $200 per item.",
       "Sec. 70437 allows capital gains taxes from the sale of farmland to farmers to be paid in four installments.",
+      "Sec. 70438 expands the list of types of disasters for which a taxpayer may claim a deduction.",
       "Sec. 70439 allows real estate investment trusts (REITs) to hold a higher percentage of assets in taxable REIT subsidiaries.",
       "Costs approximately $34 billion combined from fiscal years 2025–2034."
     ]
   },
   {
-    key:"hsas", name:"Health Savings Accounts", section:"Secs. 71037, 71306–71308", chapter:"Individual & Family Provisions",
-    yearlyValues:[0,0.3,0.7,1,1.2,1.3,1.4,1.4,1.5,1.6],
+    key:"hsas", name:"Health Savings Accounts", section:"Secs. 71036–71308", chapter:"Individual & Family Provisions",
+    yearlyValues:[0.007,0.334,0.748,1.013,1.211,1.296,1.368,1.438,1.515,1.578],
     bullets:[
       "Expands eligibility for and contribution limits to health savings accounts (HSAs).",
       "Costs approximately $10 billion from fiscal years 2025–2034."
@@ -726,8 +766,8 @@ const provisions = [
     key:"nukes_hydrogen", name:"Nuclear & Hydrogen Cost Recovery", section:"Secs. 70510–70511", chapter:"Clean Energy Provisions",
     yearlyValues:[0,0,0,0,0,-0.1,-0.4,-1.1,-1.8,-2.4],
     bullets:[
-      "Retains or modifies cost recovery and credit rules for nuclear energy facilities and hydrogen production.",
-      "Hydrogen credit modifications take effect after December 31, 2027.",
+      "Removes or modifies cost recovery and credit rules for nuclear energy facilities and hydrogen production.",
+      "Hydrogen credit termination takes effect after December 31, 2027.",
       "Part of broader IRA clean energy reforms that raise a combined $544 billion from fiscal years 2025–2034."
     ]
   },
@@ -736,7 +776,7 @@ const provisions = [
     yearlyValues:[0,0,0,-0.1,-0.5,-1.3,-2.6,-4.3,-6.7,-9.4],
     bullets:[
       "Modifies or restricts the tech-neutral clean electricity production credit (the successor to the renewable electricity production credit).",
-      "New wind and solar projects beginning construction after December 31, 2027, are ineligible for the credit.",
+      "New wind and solar projects first producing electricity after December 31, 2027, are ineligible for the credit.",
       "Part of broader IRA clean energy reforms that raise a combined $544 billion from fiscal years 2025–2034."
     ]
   },
@@ -745,7 +785,7 @@ const provisions = [
     yearlyValues:[0,-0.3,-8,-12.2,-16.7,-21.8,-24.6,-26,-27.2,-29],
     bullets:[
       "Modifies or restricts the tech-neutral clean electricity investment credit (the successor to the investment tax credit for clean energy).",
-      "New wind and solar projects beginning construction after December 31, 2027, are ineligible for the credit.",
+      "New wind and solar projects first producing electricity after December 31, 2027, are ineligible for the credit.",
       "Part of broader IRA clean energy reforms that raise a combined $544 billion from fiscal years 2025–2034."
     ]
   },
@@ -754,7 +794,7 @@ const provisions = [
     yearlyValues:[0,-1.8,-6.3,-9.2,-8.8,-7.8,-6.1,-4.9,-3.8,-1.2],
     bullets:[
       "Modifies or restricts the 45X advanced manufacturing production credit for solar panels, wind components, and battery components.",
-      "Modifications to the credit take effect after December 31, 2027.",
+      "Modifications to the credit take effect after December 31, 2026.",
       "Part of broader IRA clean energy reforms that raise a combined $544 billion from fiscal years 2025–2034."
     ]
   },
@@ -778,10 +818,9 @@ const provisions = [
   },
   {
     key:"energy_other", name:"Other Energy Tax Provisions", section:"Secs. 70523–70525", chapter:"Clean Energy Provisions",
-    yearlyValues:[0,0.2,0.4,0.4,0.4,0.4,0.5,0.5,0.5,0.5],
+    yearlyValues:[0,0.182,0.355,0.373,0.403,0.44,0.458,0.476,0.481,0.496],
     bullets:[
-      "Includes provisions related to intangible drilling costs (IDCs), publicly traded partnerships (PTPs), and other miscellaneous energy tax changes (Sec. 70525).",
-      "Sec. 70531 removes the tariff de minimis exemption for commercial shipping imports and creates new civil penalties for violations. Raises $39 billion."
+      "Includes provisions related to intangible drilling costs (IDCs), publicly traded partnerships (PTPs), and individuals who dye fuel (Sec. 70525)."
     ]
   },
 
@@ -824,7 +863,7 @@ const provisions = [
   },
   {
     key:"other_payfors", name:"ERTC Clawback & IRS Direct File", section:"Secs. 70605–70607", chapter:"Pay-Fors",
-    yearlyValues:[-0.2,-1,-0.4,0,0,0,0,0,0,0],
+    yearlyValues:[-0.246,-1.018,-0.442,-0.098,-0.079,-0.079,-0.079,-0.078,-0.078,-0.079],
     bullets:[
       "Sec. 70605 prevents any Employee Retention Tax Credit (ERTC) refunds for claims made after January 31, 2024, and enhances penalties on ERTC promoters, applying those penalties retroactively.",
       "Sec. 70606 requires Social Security numbers for claimants of the American Opportunity Tax Credit and Lifetime Learning Credit.",
@@ -837,7 +876,7 @@ const provisions = [
     yearlyValues:[0,-4.8,-13.9,-19.8,-22.5,-22.9,-23.7,-24.6,-25.6,-26.7],
     bullets:[
       "Modifies ACA premium tax credit (PTC) provisions, reducing the credits available to certain marketplace enrollees.",
-      "Key provisions take effect starting December 31, 2026, and December 31, 2027.",
+      "Key provisions take effect in 2026, 2027, and 2028.",
       "Raises $185 billion from fiscal years 2025–2034."
     ]
   }
@@ -923,9 +962,10 @@ const mainChart = new Chart(canvas, {
             const val = ctx.raw;
             const abs = Math.abs(val);
             let str;
-            if (abs >= 1000) str = (abs/1000).toFixed(2) + "T";
-            else if (abs >= 1) str = abs.toFixed(1) + "B";
-            else str = (abs*1000).toFixed(0) + "M";
+            if (abs >= 1000) str = (abs/1000).toFixed(1).replace(/\.0$/,"") + "T";
+            else if (abs >= 10) str = Math.round(abs) + "B";
+            else if (abs >= 1) str = abs.toFixed(1).replace(/\.0$/,"") + "B";
+            else str = Math.round(abs*1000) + "M";
             return val >= 0 ? `  Tax cut: $${str}` : `  Tax increase: $${str}`;
           }
         },
@@ -946,12 +986,12 @@ const mainChart = new Chart(canvas, {
             if (val === 0) return "$0";
             const sign = val > 0 ? "+" : "-";
             const abs = Math.abs(val);
-            let num, unit;
-            if (abs >= 1000) { num = abs / 1000; unit = "T"; }
-            else if (abs >= 1) { num = abs; unit = "B"; }
-            else { num = abs * 1000; unit = "M"; }
-            const s = num.toFixed(1);
-            return sign + "$" + (s.endsWith(".0") ? s.slice(0, -2) : s) + unit;
+            let s, unit;
+            if (abs >= 1000) { s = (abs/1000).toFixed(1); unit = "T"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+            else if (abs >= 10) { s = String(Math.round(abs)); unit = "B"; }
+            else if (abs >= 1) { s = abs.toFixed(1); unit = "B"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+            else { s = String(Math.round(abs*1000)); unit = "M"; }
+            return sign + "$" + s + unit;
           }
         },
         border: { display: false }
@@ -1010,8 +1050,9 @@ function formatCost(val) {
   const abs = Math.abs(val);
   let str;
   if (abs >= 1000) str = "$" + (abs/1000).toFixed(2).replace(/\.?0+$/,"") + " trillion";
+  else if (abs >= 10) str = "$" + Math.round(abs) + " billion";
   else if (abs >= 1) str = "$" + abs.toFixed(1).replace(/\.0$/,"") + " billion";
-  else if (abs >= 0.001) str = "$" + (abs*1000).toFixed(0) + " million";
+  else if (abs >= 0.001) str = "$" + Math.round(abs*1000) + " million";
   else str = "< $1 million";
   return val >= 0 ? "Costs " + str : "Raises " + str;
 }
@@ -1098,7 +1139,10 @@ function selectProvision(key) {
             label(ctx) {
               const v = ctx.raw;
               const abs = Math.abs(v);
-              let s = abs >= 1 ? "$" + abs.toFixed(1).replace(/\.0$/,"") + "B" : "$" + (abs*1000).toFixed(0) + "M";
+              let s;
+              if (abs >= 10) s = "$" + Math.round(abs) + "B";
+              else if (abs >= 1) s = "$" + abs.toFixed(1).replace(/\.0$/,"") + "B";
+              else s = "$" + Math.round(abs*1000) + "M";
               return v >= 0 ? "  Cut: " + s : "  Raise: " + s;
             }
           }
@@ -1118,12 +1162,12 @@ function selectProvision(key) {
               if (v === 0) return "$0";
               const sign = v > 0 ? "+" : "-";
               const abs = Math.abs(v);
-              let num, unit;
-              if (abs >= 1000) { num = abs / 1000; unit = "T"; }
-              else if (abs >= 1) { num = abs; unit = "B"; }
-              else { num = abs * 1000; unit = "M"; }
-              const s = num.toFixed(1);
-              return sign + "$" + (s.endsWith(".0") ? s.slice(0, -2) : s) + unit;
+              let s, unit;
+              if (abs >= 1000) { s = (abs/1000).toFixed(1); unit = "T"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+              else if (abs >= 10) { s = String(Math.round(abs)); unit = "B"; }
+              else if (abs >= 1) { s = abs.toFixed(1); unit = "B"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+              else { s = String(Math.round(abs*1000)); unit = "M"; }
+              return sign + "$" + s + unit;
             }
           },
           border: { display: false }
@@ -1166,7 +1210,12 @@ function selectProvision(key) {
               label(ctx) {
                 const v = ctx.raw;
                 if (v === 0) return "  $0";
-                return `  ${v >= 0 ? "Costs $" : "Raises $"}${Math.abs(v)}B`;
+                const abs = Math.abs(v);
+                let s;
+                if (abs >= 10) s = "$" + Math.round(abs) + "B";
+                else if (abs >= 1) s = "$" + abs.toFixed(1).replace(/\.0$/,"") + "B";
+                else s = "$" + Math.round(abs*1000) + "M";
+                return `  ${v >= 0 ? "Costs " : "Raises "}${s}`;
               }
             },
             backgroundColor: "#1f476c",
@@ -1189,12 +1238,12 @@ function selectProvision(key) {
                 if (v === 0) return "$0";
                 const sign = v > 0 ? "+" : "-";
                 const abs = Math.abs(v);
-                let num, unit;
-                if (abs >= 1000) { num = abs / 1000; unit = "T"; }
-                else if (abs >= 1) { num = abs; unit = "B"; }
-                else { num = abs * 1000; unit = "M"; }
-                const s = num.toFixed(1);
-                return sign + "$" + (s.endsWith(".0") ? s.slice(0, -2) : s) + unit;
+                let s, unit;
+                if (abs >= 1000) { s = (abs/1000).toFixed(1); unit = "T"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+                else if (abs >= 10) { s = String(Math.round(abs)); unit = "B"; }
+                else if (abs >= 1) { s = abs.toFixed(1); unit = "B"; if (s.endsWith(".0")) s = s.slice(0,-2); }
+                else { s = String(Math.round(abs*1000)); unit = "M"; }
+                return sign + "$" + s + unit;
               }
             },
             border: { display: false }
